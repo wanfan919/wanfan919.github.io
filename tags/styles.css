@@ -1,0 +1,11 @@
+/* 保持原有样式，或根据需要进行调整 */
+#story-container, #choice-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+button {
+    /* ... 保持原有样式 ... */
+    display: inline-block; /* 允许按钮并排显示 */
+    margin: 5px; /* 稍微调整间距 */
+}
