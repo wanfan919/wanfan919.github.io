@@ -3,7 +3,7 @@ let currentScene = 0;
 const scenes = [  
     {  
         id: 0,  
-        text: "你醒来发现自己身处一个未知的森林中，四周是茂密的树木和未知的声响。你决定：",  
+        text: "Wandering for what? Do you know?：",
         choices: [  
             { text: '继续前行', action: 'goForward' },  
             { text: '返回原路', action: 'turnBack' },  
