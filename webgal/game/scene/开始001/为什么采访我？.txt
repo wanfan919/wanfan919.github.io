@@ -1,0 +1,6 @@
+why:因为你在和我对话 -fontSize=default;
+why:这种对话必然是重复的 -fontSize=default;
+why:重复，但每次都有些微的形变，这种感觉很奇妙 -fontSize=default;
+why:找不同虽然是儿童的乐趣，成年人再尝试下，也会发现这娱乐方式挺不错的。 -fontSize=default;
+why:让人在对过去适应和接受的同时，不失去新鲜感的刺激。 -fontSize=default;
+choose:你从我这里能获取什么新鲜感？:开始001/你从我这里能获取什么新鲜感？.txt|说人话，求求你了:开始001/说人话，求求你了.txt;

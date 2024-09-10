@@ -1,0 +1,5 @@
+why:请少用这种词汇 -fontSize=default;
+why:谢谢 -fontSize=default;
+why:讽刺包括一个道德主义的部分和一个嘲笑的部分。 -fontSize=default;
+why:这点我相信你很明白 -fontSize=default;
+choose:嗯嗯嗯:开始001/嗯嗯嗯.txt|呃呃呃:开始001/呃呃呃2.txt|抱歉我不明白:开始001/抱歉我不明白.txt|我的意思是讲点实际的东西行吗:开始001/我的意思是讲点实际的东西行吗.txt;

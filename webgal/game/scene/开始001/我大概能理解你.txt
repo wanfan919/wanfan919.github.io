@@ -1,0 +1,2 @@
+why:大概吧 -fontSize=default;
+choose:结束吧，不想说了:开始001/结束吧，不想说了.txt;

@@ -1,0 +1,7 @@
+changeBg:ComfyUI_00022_.png -transform={"glitchFilm":1,"rgbFilm":1};
+bgm:05大风吹.mp3;
+why:少一些固化的先入为主的判断吧，你若什么事都要想明白了，这样不会有好结果的。 -fontSize=default;
+why:这样吧 -fontSize=default;
+why:我来问些问题 -fontSize=default;
+why:你觉得如何？ -fontSize=default;
+choose:当然可以:开始001/当然可以.txt|或许吧:开始001/或许吧.txt|不可能的:开始001/不可能的.txt;

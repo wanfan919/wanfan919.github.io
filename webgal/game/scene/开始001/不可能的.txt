@@ -1,0 +1,5 @@
+changeBg:ComfyUI_00013_.png -transform={"godrayFilm":1};
+why:没有关系的 -fontSize=default;
+why:选择否定，是你的防御手段 -fontSize=default;
+why:我能够理解 -fontSize=default;
+choose:抱歉我不明白:开始001/抱歉我不明白.txt|我大概能理解你:开始001/我大概能理解你.txt|我为什么要和你对话？能否停止？:开始001/我为什么要和你对话？能否停止？.txt;

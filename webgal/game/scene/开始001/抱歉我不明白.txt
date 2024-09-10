@@ -1,0 +1,3 @@
+changeBg:ComfyUI_00020_.png -transform={"dotFilm":1};
+why:不明白是正常的归宿 -fontSize=default;
+choose:结束吧，不想说了:开始001/结束吧，不想说了.txt|那什么是不正常的归宿:开始001/什么时正常的归宿.txt|很多时候我会因此感到自卑:开始001/很多时候我会因此感到自卑.txt;

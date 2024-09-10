@@ -1,0 +1,2 @@
+why:抱歉 -fontSize=default;
+choose:你很无聊:开始001/你很无聊.txt;

@@ -1,0 +1,2 @@
+why:礼貌只不过是在自我防御罢了 -fontSize=default;
+choose:你很无聊:开始001/你很无聊.txt|谁问你了:开始001/谁问你了.txt;

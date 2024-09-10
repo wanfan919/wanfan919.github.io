@@ -1,0 +1,7 @@
+why:对话是一种强迫性地选择 -fontSize=default;
+why:或者说绝大多数选择都是强迫性的 -fontSize=default;
+why:你从脑子里挑选词汇，分解，聚焦，搅拌搅拌 -fontSize=default;
+why:那些东西的能量逐渐减少 -fontSize=default;
+why:都倒在舌头上，声带里 -fontSize=default;
+why:将给别人听，让大家都能理解 -fontSize=default;
+choose:嗯:开始001/嗯.txt|有那么一点道理:开始001/有那么一点道理.txt|我能问什么都被设定好了，这叫什么对话？:开始001/我能问什么都被设定好了，这叫什么对话？.txt;

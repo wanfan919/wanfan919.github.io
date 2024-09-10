@@ -1,0 +1,8 @@
+Game_name:欢迎使用WebGAL！;
+Game_key:c368d27460a3d6;
+Title_img:WebGAL_New_Enter_Image.png;
+Title_bgm:Intro.mp3;
+Textbox_theme:imss;
+Package_name:WF;
+Description:wanderwhy;
+Game_Logo:ComfyUI_00025_.png|WF01.png;

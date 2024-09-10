@@ -1,0 +1,3 @@
+changeBg:ComfyUI_00030_.png;
+why:嗯 -fontSize=default;
+choose:结束吧，不想说了:开始001/结束吧，不想说了.txt;

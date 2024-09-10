@@ -1,0 +1,6 @@
+bgm:10山海.wav;
+changeBg:ComfyUI_00018_.png -transform={};
+why:我当然相信你所说的每一句话 -fontSize=default;
+changeBg:ComfyUI_00019_.png -transform={"godrayFilm":1};
+why:信任是这个时代最宝贵的东西 -fontSize=default;
+choose:谢谢你:开始001/谢谢你.txt|我不在乎:开始001/我不在乎（我当然相信你所说的每一句话）.txt;

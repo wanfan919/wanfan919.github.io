@@ -1,0 +1,5 @@
+bgm:hy.mp3;
+intro:世纪初流行过的福特蓝玻璃，|是最先回想起的东西|幽光不知是从电视屏幕发出，|还是从窗户外的世界传来。 -fontSize=medium -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 255, 255, 1) -animation=fadeIn -delayTime=2000 -hold;
+unlockCg:ComfyUI_00111_.png;
+intro:小时候，喜欢冲着玻璃哈气，再一点点擦开白雾|指头滞涩地摩擦玻璃，隐隐约约，自己的脸被看见|每晚这个孩子都会被男人吵醒，低质量的睡眠从此绵延了一生 -fontSize=small -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 43, 43, 1) -animation=pixelateEffect -delayTime=2000 -hold;
+changeBg:ComfyUI_01098_.png -duration=100;

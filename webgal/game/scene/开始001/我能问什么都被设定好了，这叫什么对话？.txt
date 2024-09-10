@@ -1,0 +1,4 @@
+why:当然是对话 -fontSize=default;
+why:简化的对话，现代人很喜欢的 -fontSize=default;
+why:现代人的全部热情之中存在着一个内心深处的隐秘的缺憾，一种渴望，在那种对欢乐的寻求之中存在着另一种寻求 -fontSize=default;
+choose:你说得对:开始001/你说得对001.txt|沉默:开始001/沉默001.txt|狗屁不通:开始001/狗屁不通.txt;

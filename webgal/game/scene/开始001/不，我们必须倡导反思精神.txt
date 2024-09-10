@@ -1,0 +1,6 @@
+changeBg:ComfyUI_00024_.png;
+why:那东西我们早就不屑啦 -fontSize=default;
+setTransform:{"position":{"x":10},"scale":{"x":10},"blur":10,"oldFilm":1,"rgbFilm":1,"godrayFilm":1} -target=bg-main -duration=2000;
+setTransform:{"glitchFilm":1} -target=bg-main -duration=0;
+why:哈  哈  哈 -fontSize=default;
+choose:不，绝不:开始001/不，绝不（不屑于反思）.txt|哈 哈哈 哈哈哈:开始001/哈 哈哈 哈哈哈.txt;

@@ -1,0 +1,7 @@
+setAnimation:shake -target=fig-left -next;
+why:一言不发，是吧 -fontSize=default;
+why:当你试图用犄角旮旯里残存的一丝健康来自我安慰时，生活的沉重如同泰山压顶般袭来，而你却毫无还手之力。 -fontSize=default;
+why:真是可爱的宝宝啊 -fontSize=default;
+why:沉默，沉默? -fontSize=default;
+why:你有什么资格沉默？ -fontSize=default;
+choose:我当然有资格，人天然具备神圣的权力保持沉默:开始001/我当然有资格，人天然具备神圣的权力保持沉默.txt|继续沉默:开始001/继续沉默.txt|你没有资格这般询问我:开始001/你没有资格这般询问我.txt|别说没用的，我现在只想知道我在哪？:开始001/我在哪？.txt;

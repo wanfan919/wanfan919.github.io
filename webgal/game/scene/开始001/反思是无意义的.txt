@@ -1,0 +1,5 @@
+why:反思的时代，新的希望和新的痛苦同时相互交织 -fontSize=default;
+why:有这一切，时代朝更好的方向走去 -fontSize=default;
+why:问题在于寻找个人良知与历史进程之间的正确关系 -fontSize=default;
+why:我们的激情从什么时候燃烧殆尽？一个在生命的每一个阶段都要反思的人过不好他这一生。 -fontSize=default;
+choose:说得不错:开始001/说得不错.txt|够了，不用再讲你这理论了:开始001/够了，不用再讲你这理论了.txt;

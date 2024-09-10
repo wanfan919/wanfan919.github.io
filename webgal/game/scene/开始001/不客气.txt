@@ -1,0 +1,5 @@
+why:嗯 -fontSize=default;
+why:礼貌，温和，现代人的表面气质。 -fontSize=default;
+why:这种气质初见或许让人舒服 -fontSize=default;
+why:长久以来就会厌倦 -fontSize=default;
+choose:但我不会厌倦:开始001/但我不会厌倦.txt|其实我很清楚我为什么这样做:开始001/其实我很清楚我为什么这样做.txt;

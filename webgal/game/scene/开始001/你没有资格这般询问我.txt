@@ -1,0 +1,4 @@
+why:早已死亡的尸体没有评价的资格， -fontSize=default;
+生活在遗骸中只会让人生活没有出路， -fontSize=default;
+这便是苟且偷生的代价。 -fontSize=default;
+choose:你经历过什么？:开始001/你经历过什么？.txt|嗯，我懂:开始001/嗯，我懂.txt;

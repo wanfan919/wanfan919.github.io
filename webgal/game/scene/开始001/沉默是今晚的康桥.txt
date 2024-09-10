@@ -1,0 +1,7 @@
+changeBg:ComfyUI_00036_.png -transform={"dotFilm":1,"godrayFilm":1};
+bgm:06艾玛.mp3;
+why:人要永远做小孩子虽办不到，但想要保持沉默是能办到的。 -fontSize=default;
+why:在公众场合什么都不说，到了私下里则妙语连珠，换言之，对信得过的人什么都说，对信不过的人什么都不说。 -fontSize=default;
+why:把保持沉默看做怯懦，这是不对的。沉默是一种生活方式。 -fontSize=default;
+why:一个中国作家曾这么写道 -fontSize=default;
+choose:我很认可:开始001/我很认可.txt|狗屁不通:开始001/狗屁不通.txt;

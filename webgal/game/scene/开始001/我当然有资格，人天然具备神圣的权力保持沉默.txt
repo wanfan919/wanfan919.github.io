@@ -1,0 +1,6 @@
+why:好的，了解 -fontSize=default;
+why:我就像站在一面被垃圾和杂质填充的墙面前。 -fontSize=default;
+why:它沉默，混乱。 -fontSize=default;
+why:在地狱里寻找非地狱的人和物，学会辨别他们，使他们存在下去，赋予他们空间。 -fontSize=default;
+why:记忆的整体，欲望的整体，一种言语的符号的整体 -fontSize=default;
+choose:够了，不用再讲你这理论了:开始001/够了，不用再讲你这理论了.txt|沉默:开始001/沉默001.txt;

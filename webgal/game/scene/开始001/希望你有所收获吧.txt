@@ -1,0 +1,3 @@
+why:你很温和，谢谢你 -fontSize=default;
+why:我不会有所收获，我什么也得不到。 -fontSize=default;
+choose:沉默......:开始001/沉默001.txt;

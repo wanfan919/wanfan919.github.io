@@ -1,0 +1,8 @@
+角色名，留空以继承上句:对话 -fontSize=default;
+setVar:a=1;
+; // 当 a 大于 1 时跳转到场景 1
+changeScene:1.txt -when=a>1;
+; // 只有 a 为 1 时才跳转，注意相等运算符是 ==
+changeScene:2.txt -when=a==1;
+; // 如果 a 小于 1，那么上面的语句不执行，自然就执行这一句了
+changeScene:3.txt;

@@ -1,0 +1,3 @@
+why:但是当你长期处于这种得不到正反馈的对话中 -fontSize=default;
+why:你的耐心会一点点被磨损 -fontSize=default;
+choose:不，我的耐心坚如磐石:开始001/不，我的耐心坚如磐石.txt;

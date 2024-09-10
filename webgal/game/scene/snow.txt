@@ -1,0 +1,9 @@
+setTextbox:hide;
+bgm:hy.mp3;
+playEffect:自然以它的无言.wav -id=1234;
+intro:长长的一口涮洗，水体颤动。|惊动了大西洋链接太平洋的水面，|阻止了我们一路高歌。 -fontSize=medium -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 255, 255, 1) -animation=fadeIn -delayTime=2000 -hold;
+intro:面对不确定性，我很恐惧。|双目警灯，四肢闪烁。|表情是心理的流淌，语言是思想的伪装。 -fontSize=medium -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 255, 255, 1) -animation=fadeIn -delayTime=2000 -hold;
+intro:跳过去吧，|还有那仅有的一步，|还有那仅有的一秒，|飞越过往。 -fontSize=medium -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 255, 255, 1) -animation=fadeIn -delayTime=1500 -hold;
+intro:不过其实我们从来都不需要担心。|人类不论我们怎么改造或是重新开始，|都是一样的需要被区分开来，|需要对比，|需要证明。 -fontSize=medium -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 255, 255, 1) -animation=fadeIn -delayTime=1500 -hold;
+changeBg:ComfyUI_00011_.png;
+choose:后记:后记/后记001.txt|设定:设定001/设定.txt;

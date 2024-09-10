@@ -1,0 +1,9 @@
+why:我是why，一种思维逻辑， -ææ¯why.wav -fontSize=default;
+why:我和人谈论各种话题，吮吸他们的脑脊液 -fontSize=default;
+why:这么做，我的生命得以维持 -fontSize=default;
+对话，是我的本能，像呼吸吞吐一样自然 -fontSize=default;
+选择，是你的权力，用文字进攻或者防御 -fontSize=default;
+why:我这种行为，一般称之为|"采访" -fontSize=default;
+why:缴械投降或者殊死一搏，都不是我想看到的 -fontSize=default;
+why:我希望对话可以永恒持续|这是一点可怜的奢求 -fontSize=default;
+choose:所以你现在是在采访我？:开始001/所以你现在是在采访我？.txt|保持沉默......:开始001/保持沉默.......txt|那我是谁？:开始001/额，那我是谁？.txt|所以“why”是什么:开始001/why，是什么.txt;

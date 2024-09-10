@@ -1,0 +1,6 @@
+why:或许是吧 -fontSize=default;
+why:采访是对大脑的按摩，让那些依靠本能运转的腐朽系统，穿插进外界的问题 -v1.wav -fontSize=default;
+why:让你迫不得已开始思考 -fontSize=default;
+why:我们想要得出置信度较高的结论，必须要进行大量的采访 -fontSize=default;
+why:这是我一直在努力的 -fontSize=default;
+choose:那我是谁？可以告诉我吗？:开始001/额，那我是谁？.txt|为什么采访我？:开始001/为什么采访我？.txt|希望你有所收获吧:开始001/希望你有所收获吧.txt|我大概能理解你:开始001/我大概能理解你.txt|可惜你已经被我看穿了:开始001/你已经被我看穿了.txt;

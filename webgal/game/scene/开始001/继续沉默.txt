@@ -1,0 +1,7 @@
+why:这种沉默会引向思维的死亡 -fontSize=default;
+why:沉默是放纵自己思维的药 -fontSize=default;
+why:你可以不耗费力气 -fontSize=default;
+why:多给自己观察的机会，以便在一众选择里挑选最优解 -fontSize=default;
+why:你就是这么不喜欢轻易展露思维和情感 -fontSize=default;
+why:哎 -fontSize=default;
+choose:我要是一直沉默会怎么样？:开始001/我要是一直沉默会怎么样？.txt|我想清醒:开始001/我想清醒.txt|沉默，沉默，永远地沉默:开始001/沉默，沉默，永远地沉默.txt;

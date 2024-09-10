@@ -1,0 +1,8 @@
+changeBg:ComfyUI_00035_.png;
+why:why是一个平庸的人，一生困囿于一次又一次的兴奋信号起伏中，被波动的欲望驱赶 -fontSize=default;
+why:一生想干很多事，却很显然一事无成 -fontSize=default;
+why:why从来没停止思考，why一直这么认为，逼迫着自己相信 -fontSize=default;
+why:那些既简单又珍稀的天赋，始终处于彼此之间的竞争当中，包括乐观主义、玩世不恭的缺乏、道德方面的勇气、大公无私、凭借自己的力量工作的能力、为他人而消耗自己的慷慨，以及对所有自己不完全赞成的东西的坚决拒绝 -fontSize=default;
+why:这些他都没有 -fontSize=default;
+why:他比尸体还安静 -fontSize=default;
+choose:why真是个废物东西啊:开始001/真是个废物东西啊.txt|这很正常吧:开始001/这很正常吧.txt|所以说why已经死了？:开始001/所以说why已经死了？.txt|那你是什么东西？:开始001/那你是什么东西？.txt;

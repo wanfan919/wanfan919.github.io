@@ -1,0 +1,7 @@
+bgm:08鬼.mp3;
+changeBg:ComfyUI_00102_.png -transform={"reflectionFilm":1};
+why:这是人类难得的反思 -fontSize=default;
+why:可我不鼓励反思 -fontSize=default;
+why:当没有止境的反思把脑子占满，人就废了 -fontSize=default;
+why:你不用感到无聊，把无聊当作生命的基调就可以 -fontSize=default;
+choose:好的:开始001/好的（无聊的反思）.txt|不，我们必须倡导反思精神:开始001/不，我们必须倡导反思精神.txt;

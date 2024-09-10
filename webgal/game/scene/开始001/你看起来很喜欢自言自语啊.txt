@@ -1,0 +1,5 @@
+bgm:Candy Says - Favourite Flavour.mp3;
+why:没错，自言自语。这就是我的风格 -fontSize=default;
+如果两个相同的灵魂在同一时刻沟通， -fontSize=default;
+那和自言自语本无区别。 -fontSize=default;
+choose:你是说我们是相同的？:开始001/你是说我们是相同的？.txt|我还是很困惑:选择场景文件|我想清醒:开始001/我想清醒.txt|选择沉默......:选择场景文件|你是不会讲故事吗，把事情讲清楚不行？:开始001/你是不会讲故事吗，把事情讲清楚不行？.txt;

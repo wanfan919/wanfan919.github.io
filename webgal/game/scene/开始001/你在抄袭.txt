@@ -1,0 +1,3 @@
+抄袭者why:没错，我是抄袭者 -fontSize=default;
+抄袭者why:我无法被赦免 -fontSize=default;
+choose:真是个废物东西啊:开始001/真是个废物东西啊.txt|我可以赦免你:开始001/我可以赦免你（抄袭）.txt;

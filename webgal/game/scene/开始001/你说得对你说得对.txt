@@ -1,0 +1,3 @@
+why:对话可以就此循环 -fontSize=default;
+why:你成功了，恭喜你！ -fontSize=default;
+choose:你说得对:开始001/你说得对3阶.txt|你说得对你说得对:开始001/你说得对你说得对.txt;

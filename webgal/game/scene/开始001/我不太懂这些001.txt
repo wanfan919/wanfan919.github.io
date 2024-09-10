@@ -1,0 +1,6 @@
+why:不太懂，那只能说明你还没有多少人生的余裕 -fontSize=default;
+why:我猜你又会说，人生的余裕是什么 -fontSize=default;
+why:是吧？生活手忙脚乱，没有出路，不知去向 -fontSize=default;
+why:那里有我听不懂的语言，它们用自然来讲故事，不需要理解，只能感受。 -fontSize=default;
+why:失去耐心的人，都长一个样 -fontSize=default;
+choose:你说都什么扯淡东西:开始001/你说都什么扯淡东西！.txt|沉默......:开始001/沉默001.txt;

@@ -1,0 +1,4 @@
+why:或许，是否定的不完全 -fontSize=default;
+why:不完全就意味着犹豫 -fontSize=default;
+why:你必须习惯使用直截了当的方式 -fontSize=default;
+choose:你说都什么扯淡东西！:开始001/你说都什么扯淡东西！.txt|沉默:开始001/沉默001.txt;

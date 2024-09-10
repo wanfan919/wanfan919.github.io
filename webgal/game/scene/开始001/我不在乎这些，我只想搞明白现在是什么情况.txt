@@ -1,0 +1,6 @@
+why:现在是处在投影的空间里 -fontSize=default;
+只有你我 -fontSize=default;
+在这个投影的世界里，我们很安全 -fontSize=default;
+why:现实的本质不会改变，这不会给你带来“诡异感” -fontSize=default;
+why:就这样 -fontSize=default;
+choose:你到底想表达什么？:开始001/你到底想表达什么？.txt|我要是一直沉默会怎么样？:开始001/我要是一直沉默会怎么样？.txt|说人话，求求你了:开始001/说人话，求求你了.txt|沉默......:开始001/沉默001.txt|沉默，沉默，永远地沉默:开始001/沉默，沉默，永远地沉默.txt;

@@ -1,0 +1,18 @@
+; 初始场景，以及特效演示
+bgm:Intro.mp3;
+unlockBgm:Intro.mp3 -name=雲を追いかけて;
+intro:你好|这是wandering fiction|一个中断过多次的尝试|请原谅|它是一个很僵硬|很死板的故事 -fontSize=medium -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 255, 255, 1) -animation=fadeIn -delayTime=3000;
+intro:献给|需要被献给的人 -fontSize=medium -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 255, 255, 1) -animation=fadeIn -delayTime=1500;
+changeBg:ComfyUI_00025_.png -next -duration=2000 -transform={"oldFilm":1};
+unlockCg:bg.png -name=良夜; // 解锁CG并赋予名称
+changeFigure:none -left -transform={"position":{"y":-1000}} -next -animationFlag=on;
+setAnimation:enter-from-left -target=fig-left -next;
+:您的生活状态我只能用自负与可悲来形容， -fontSize=default;
+:通过不断的难以抑制的触景生情与触病生愁来填充自己的枯燥乏味的生命，终日碌碌无为无所事事。 -fontSize=default;
+
+:您习惯性地慨叹世事的无常与不公，于是需要各式油腻而缺乏营养的快餐式鸡汤来抚慰心灵。 -fontSize=default;
+:当您无法将自我欺骗持续下去的时候，你开始焦虑、心情沉闷，甚至产生自暴自弃的危险心里倾向。 -fontSize=default;
+:这本身其实很无趣 -fontSize=default;
+:我或许清楚，我或许明白 -fontSize=default;
+你好啊，我的名字是why -fontSize=default;
+choose:why，为什么和我说这些？:开始001/你是谁，为什么和我说这些？.txt|我不懂你在说些什么:开始001/我不太懂这些001.txt|沉默.....:开始001/沉默001.txt|你好啊:开始001/你好啊.txt|好的:好的.txt;

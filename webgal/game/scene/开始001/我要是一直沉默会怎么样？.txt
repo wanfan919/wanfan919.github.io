@@ -1,0 +1,4 @@
+why:你会无趣，无聊，无趣迫使你选择开口，而你没有能力对抗 -fontSize=default;
+why:就这样 -fontSize=default;
+why:幸而他是沉默惯了的，她得不到他的答覆，也就恬然不以为怪。 -fontSize=default;
+choose:沉默，沉默，永远地沉默:开始001/沉默，沉默，永远地沉默.txt;

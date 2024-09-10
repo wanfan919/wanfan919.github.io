@@ -1,0 +1,5 @@
+why:时间溶解于沉默 -fontSize=default;
+why:终将一无所有 -fontSize=default;
+why:成为一个呆板停滞的鞑靼 -fontSize=default;
+why:可你只会沉默，没有好奇，这难道不可悲吗？ -fontSize=default;
+choose:你到底想表达什么？:开始001/你到底想表达什么？.txt|呃呃呃:开始001/呃呃呃.txt|什么是呆板停滞的鞑靼？:开始001/什么是呆板停滞的鞑靼？.txt|你说得对？但我不理解:开始001/你说得对？但我不理解.txt|我引以为豪:开始001/我引以为豪.txt;

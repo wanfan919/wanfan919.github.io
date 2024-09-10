@@ -1,0 +1,4 @@
+why:你好啊 -fontSize=default;
+why:真有礼貌 -fontSize=default;
+why:都是说“你好你好”，从来没有问题。 -fontSize=default;
+choose:why，为什么和我说这些？:开始001/你是谁，为什么和我说这些？.txt|我不懂你在说些什么:开始001/我不太懂这些001.txt|沉默.....:开始001/沉默001.txt|好的:好的.txt;

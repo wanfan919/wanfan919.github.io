@@ -1,0 +1,7 @@
+bgm:03烂泥.mp3;
+why:结束了，吗？ -fontSize=default;
+why:我们可以随时开始，这种掌控感很不错 -fontSize=default;
+why:我很喜悦 -fontSize=default;
+intro:很喜悦|....... -fontSize=medium -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 255, 255, 1) -animation=fadeIn -delayTime=1500;
+intro:........|就像我刚刚和你打招呼一样|我不介意再来一次 -fontSize=medium -backgroundColor=rgba(0, 0, 0, 1) -fontColor=rgba(255, 255, 255, 1) -animation=fadeIn -delayTime=1500;
+changeScene:开始001/A001.txt

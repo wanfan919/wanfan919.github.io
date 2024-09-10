@@ -1,0 +1,2 @@
+why:谢谢 -fontSize=default;
+choose:你还挺有礼貌:开始001/你还挺有礼貌.txt|不客气:开始001/不客气.txt;

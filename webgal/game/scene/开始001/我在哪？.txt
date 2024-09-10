@@ -1,0 +1,5 @@
+why:在自己的投影里 -fontSize=default;
+why:整个世界都投影在那一伸手就会破碎的眼睛里。 -fontSize=default;
+why:位置都是相对的 -fontSize=default;
+why:投影的移动，影响不了本体丝毫 -fontSize=default;
+choose:所以我也是投影？:选择场景文件|你是真实的？:开始001/你是真实的吗.txt|沉默......:选择场景文件|你说都什么扯淡东西！:选择场景文件;

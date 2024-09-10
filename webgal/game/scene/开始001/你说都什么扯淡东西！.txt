@@ -1,0 +1,5 @@
+why:扯淡 -fontSize=default;
+why:还真是，你说得没错 -fontSize=default;
+why:不过这样对我们都好 -fontSize=default;
+why:我要设想你会有什么反应，就这样无限延展出去 -fontSize=default;
+choose:真是**东西:开始001/真是东西啊.txt|我也要设想你会有什么反应，就这样无限延展出去:开始001/我也要设想你会有什么反应，就这样无限延展出去.txt|结束吧，不想说了:开始001/结束吧，不想说了.txt|对不起:开始001/对不起.txt;
