@@ -1,4 +1,4 @@
-Game_name:欢迎使用WebGAL！;
+Game_name:WF！;
 Game_key:c368d27460a3d6;
 Title_img:WebGAL_New_Enter_Image.png;
 Title_bgm:Intro.mp3;
