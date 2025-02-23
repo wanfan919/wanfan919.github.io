@@ -173,4 +173,85 @@
 POWERMODE.shake = true;
 POWERMODE.mobile = false;
 document.body.addEventListener('input', POWERMODE);
-</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/metingjs/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1.1.3/metingjs/dist/Meting.min.js"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div>
+    <script>
+            const oml2d = OML2D.loadOml2d({
+                libraryUrls: {
+                    "complete": "https://registry.npmmirror.com/oh-my-live2d/latest/files/lib/complete.js",
+                    "cubism2": "https://registry.npmmirror.com/oh-my-live2d/latest/files/lib/cubism2.js",
+                    "cubism5": "https://registry.npmmirror.com/oh-my-live2d/latest/files/lib/cubism5.js"
+                },
+                mobileDisplay: false,
+                dockedPosition: "right",
+                models: [{
+                    "path": "https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/%E5%8A%A0%E8%97%A4%E6%83%A0live2d/model/katou_01/katou_01.model.json",
+                    "mobilePosition": [-10, 23],
+                    "mobileScale": 0.1,
+                    "mobileStageStyle": {
+                        "width": 180,
+                        "height": 166
+                    },
+                    "motionPreloadStrategy": "IDLE",
+                    "position": [20, -150],
+                    "scale": 0.15,
+                    "stageStyle": {
+                        "width": 250,
+                        "height": 250
+                    }
+                }, {
+                    "path": "https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/%E7%BA%B1%E9%9B%BElive2d/model/sagiri/sagiri.model.json",
+                    "scale": 0.12,
+                    "position": [30, 0],
+                    "stageStyle": {
+                        "width": 250
+                    },
+                    "mobileScale": 0.08,
+                    "mobilePosition": [0, 0],
+                    "mobileStageStyle": {
+                        "width": 180
+                    }
+                }, {
+                    "path": ["https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/g36c_1202/normal/normal.model3.json", "https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/g36c_1202/destroy/destroy.model3.json", "https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/g36c_3103/normal/normal.model3.json", "https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/g36c_3103/destroy/destroy.model3.json", "https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/g36c_3802/normal/normal.model3.json", "https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/g36c_3802/destroy/destroy.model3.json", "https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/g36c_5201/normal/normal.model3.json", "https://cdn.statically.io/gh/lingdubing-xo/lingdubing-xo-pic/main/g36c_5201/destroy/destroy.model3.json"],
+                    "scale": 0.08,
+                    "position": [-30, 0],
+                    "stageStyle": {
+                        "width": 250
+                    },
+                    "mobileScale": 0.08,
+                    "mobilePosition": [0, 0],
+                    "mobileStageStyle": {
+                        "width": 180
+                    }
+                }],
+                parentElement: document.body,
+                primaryColor: "#8cc269",
+                sayHello: false,
+                statusBar: {
+                    "restMessage": "嘿嘿，休息一下"
+                },
+                tips: {
+                    style: {
+                        "width": 230,
+                        "height": 120,
+                        "left": "calc(50% - 20px)",
+                        "top": "-100px"
+                    },
+                    mobileStyle: {
+                        "width": 180,
+                        "height": 80,
+                        "left": "calc(50% - 30px)",
+                        "top": "-100px"
+                    },
+                    idleTips: {
+                        interval: 15000,
+                        message: function() {
+                            return axios.get('https://v1.hitokoto.cn?c=i').then(function(response) {
+                                return response.data.hitokoto;
+                            }).catch(function(error) {
+                                console.error(error);
+                            });
+                        }
+                    }
+                }
+            });
+    </body></html>
