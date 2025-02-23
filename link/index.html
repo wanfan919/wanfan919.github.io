@@ -214,7 +214,127 @@ document.getElementById('feedback').textContent = correct ? '正确！大象是�
 <script src="script.js"></script> 
 </body> 
 </html>
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鼠标互动贪吃蛇游戏</title>
+    <style>
+        /* 设置页面的整体样式 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        /* 游戏区域的样式 */
+        #game-board {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            background-color: #222;
+            border: 1px solid #333;
+        }
+
+        /* 蛇身和食物的通用样式 */
+        .snake-segment,
+        .food {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+        }
+
+        /* 蛇身的样式 */
+        .snake-segment {
+            background-color: #0f0;
+        }
+
+        /* 食物的样式 */
+        .food {
+            background-color: #f00;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 游戏区域 -->
+    <div id="game-board"></div>
+    <script>
+        // 获取游戏区域元素
+        const gameBoard = document.getElementById('game-board');
+        // 每个方块的大小
+        const blockSize = 20;
+        // 蛇的初始位置和方向
+        let snake = [{ x: 10, y: 10 }];
+        let direction = { x: 1, y: 0 };
+        // 食物的位置
+        let food = { x: Math.floor(Math.random() * (gameBoard.offsetWidth / blockSize)), y: Math.floor(Math.random() * (gameBoard.offsetHeight / blockSize)) };
+
+        // 创建蛇的元素
+        function createSnakeElement(segment) {
+            const snakeSegment = document.createElement('div');
+            snakeSegment.classList.add('snake-segment');
+            snakeSegment.style.left = segment.x * blockSize + 'px';
+            snakeSegment.style.top = segment.y * blockSize + 'px';
+            gameBoard.appendChild(snakeSegment);
+        }
+
+        // 创建食物的元素
+        function createFoodElement() {
+            const foodElement = document.createElement('div');
+            foodElement.classList.add('food');
+            foodElement.style.left = food.x * blockSize + 'px';
+            foodElement.style.top = food.y * blockSize + 'px';
+            gameBoard.appendChild(foodElement);
+        }
+
+        // 更新蛇的位置
+        function updateSnake() {
+            const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+            snake.unshift(head);
+
+            // 检查是否吃到食物
+            if (head.x === food.x && head.y === food.y) {
+                // 生成新的食物位置
+                food = { x: Math.floor(Math.random() * (gameBoard.offsetWidth / blockSize)), y: Math.floor(Math.random() * (gameBoard.offsetHeight / blockSize)) };
+            } else {
+                // 移除蛇的尾部
+                snake.pop();
+            }
+
+            // 清除游戏区域
+            gameBoard.innerHTML = '';
+            // 重新创建蛇和食物的元素
+            snake.forEach(createSnakeElement);
+            createFoodElement();
+        }
+
+        // 处理鼠标移动事件
+        gameBoard.addEventListener('mousemove', (event) => {
+            const rect = gameBoard.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            const headX = snake[0].x * blockSize;
+            const headY = snake[0].y * blockSize;
+
+            if (Math.abs(mouseX - headX) > Math.abs(mouseY - headY)) {
+                direction = { x: (mouseX > headX) ? 1 : -1, y: 0 };
+            } else {
+                direction = { x: 0, y: (mouseY > headY) ? 1 : -1 };
+            }
+        });
+
+        // 游戏循环
+        setInterval(updateSnake, 150);
+    </script>
+</body>
+
+</html>
 <hr>
 <ul>
 <li>2024 The Wandering Fiction. All Rights Reserved.</li>
