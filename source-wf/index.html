@@ -152,6 +152,15 @@
 
     const setAuthState = () => {
       $('authState').textContent = state.user ? `已登录：${state.user}` : '未登录';
+      const loggedIn = !!state.user;
+      $('projectName').disabled = !loggedIn;
+      $('starterText').disabled = !loggedIn;
+      $('createBtn').disabled = !loggedIn;
+      $('lockBtn').disabled = !loggedIn || !state.currentProjectId;
+      if (!loggedIn) {
+        $('continuation').disabled = true;
+        $('appendBtn').disabled = true;
+      }
     };
 
     const api = async (path, options = {}) => {
@@ -201,6 +210,7 @@
       $('continuation').disabled = !canWrite;
       $('appendBtn').disabled = !canWrite;
       $('completeBtn').disabled = !(state.user && p.status !== 'completed' && p.creator_name === state.user);
+      $('lockBtn').disabled = !state.user || p.status === 'completed';
     };
 
     const loadProjects = async () => {
@@ -318,6 +328,7 @@
 
     $('appendBtn').onclick = async () => {
       try {
+        if (!state.token) throw new Error('请先登录');
         const content = $('continuation').value.trim();
         if (!content) throw new Error('续写内容不能为空');
         await api(`/api/projects/${state.currentProjectId}/segments`, {
@@ -334,6 +345,7 @@
 
     $('completeBtn').onclick = async () => {
       try {
+        if (!state.token) throw new Error('请先登录');
         await api(`/api/projects/${state.currentProjectId}/complete`, { method: 'POST', body: '{}' });
         stopLockHeartbeat();
         await loadProjectDetail(state.currentProjectId);
