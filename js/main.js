@@ -941,6 +941,35 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
+  const removeCategorySections = () => {
+    const removeItemByLink = href => {
+      document.querySelectorAll(`a[href="${href}"]`).forEach(link => {
+        const menuItem = link.closest('.menus_item')
+        if (menuItem) {
+          menuItem.remove()
+          return
+        }
+
+        const siteDataItem = link.closest('.sidebar-site-data a, .card-info-data a')
+        if (siteDataItem) {
+          siteDataItem.remove()
+          return
+        }
+
+        link.remove()
+      })
+    }
+
+    removeItemByLink('/categories/')
+
+    document.querySelectorAll('.menus_item, .sidebar-site-data a, .card-info-data a').forEach(node => {
+      const text = (node.textContent || '').trim()
+      if (text.includes('文章类型') || text.includes('Categories')) {
+        node.remove()
+      }
+    })
+  }
+
   const unRefreshFn = function () {
     window.addEventListener('resize', () => {
       adjustMenu(false)
@@ -965,6 +994,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.refreshFn = function () {
     initAdjust()
+    removeCategorySections()
     injectPerfumeMenuLink()
 
     if (GLOBAL_CONFIG_SITE.isPost) {
