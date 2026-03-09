@@ -826,45 +826,14 @@ document.addEventListener('DOMContentLoaded', function () {
     if (window.__wfSingleMediaPlaybackBound) return
     window.__wfSingleMediaPlaybackBound = true
 
-    const pauseOtherMedia = current => {
-      document.querySelectorAll('audio, video').forEach(media => {
-        if (media !== current && !media.paused) media.pause()
-      })
-    }
-
     document.addEventListener('play', e => {
       const current = e.target
       if (!(current instanceof HTMLMediaElement)) return
-      pauseOtherMedia(current)
+
+      document.querySelectorAll('audio, video').forEach(media => {
+        if (media !== current && !media.paused) media.pause()
+      })
     }, true)
-
-    const patchAPlayer = () => {
-      if (!window.APlayer || window.__wfAPlayerSinglePlayPatched) return
-      window.__wfAPlayerSinglePlayPatched = true
-
-      const proto = window.APlayer.prototype
-      if (!proto || typeof proto.play !== 'function') return
-
-      const originalPlay = proto.play
-      proto.play = function (...args) {
-        if (this && this.audio instanceof HTMLMediaElement) {
-          pauseOtherMedia(this.audio)
-        }
-        return originalPlay.apply(this, args)
-      }
-    }
-
-    patchAPlayer()
-    let retries = 0
-    const timer = setInterval(() => {
-      if (window.APlayer) {
-        patchAPlayer()
-        clearInterval(timer)
-        return
-      }
-      retries += 1
-      if (retries > 40) clearInterval(timer)
-    }, 500)
   }
 
   const initAiChatbot = () => {
