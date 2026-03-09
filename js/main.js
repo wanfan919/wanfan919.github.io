@@ -927,6 +927,20 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
+  const injectPerfumeMenuLink = () => {
+    const menus = document.querySelectorAll('.menus_items')
+    if (!menus.length) return
+
+    menus.forEach(menu => {
+      if (menu.querySelector('a.site-page[href="/wf-perfume/"]')) return
+
+      const item = document.createElement('div')
+      item.className = 'menus_item'
+      item.innerHTML = '<a class="site-page" href="/wf-perfume/"><i class="fa-fw fas fa-wine-bottle"></i><span> WF香水世界</span></a>'
+      menu.appendChild(item)
+    })
+  }
+
   const unRefreshFn = function () {
     window.addEventListener('resize', () => {
       adjustMenu(false)
@@ -951,6 +965,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.refreshFn = function () {
     initAdjust()
+    injectPerfumeMenuLink()
 
     if (GLOBAL_CONFIG_SITE.isPost) {
       GLOBAL_CONFIG.noticeOutdate !== undefined && addPostOutdateNotice()

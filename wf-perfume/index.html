@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WF香水世界</title>
+  <meta name="description" content="WF香水世界：香水原料资料与古今经典香水介绍。">
+  <style>
+    :root {
+      --bg1: #ff5f6d;
+      --bg2: #ffc371;
+      --bg3: #6dd5ed;
+      --ink: #1c1534;
+      --card: rgba(255, 255, 255, 0.86);
+      --accent: #b2176b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Georgia", "Times New Roman", serif;
+      color: var(--ink);
+      background: linear-gradient(125deg, var(--bg1), var(--bg2), var(--bg3));
+      background-size: 180% 180%;
+      animation: bgFlow 18s ease infinite;
+      min-height: 100vh;
+    }
+    @keyframes bgFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .veil {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.3), transparent 40%),
+                  radial-gradient(circle at 80% 30%, rgba(255,255,255,0.2), transparent 36%),
+                  radial-gradient(circle at 30% 80%, rgba(255,255,255,0.2), transparent 35%);
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      backdrop-filter: blur(8px);
+      background: rgba(255,255,255,0.38);
+      border-bottom: 1px solid rgba(255,255,255,0.5);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand {
+      font-size: 20px;
+      letter-spacing: 1px;
+      font-weight: bold;
+    }
+    .nav a {
+      text-decoration: none;
+      color: #2f1d4a;
+      margin-left: 14px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .container {
+      width: min(1080px, 92vw);
+      margin: 26px auto 90px;
+    }
+    .hero {
+      background: var(--card);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: 0 12px 34px rgba(28, 21, 52, 0.2);
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 48px);
+      color: var(--accent);
+    }
+    .hero p {
+      margin: 0;
+      font-size: 17px;
+      line-height: 1.7;
+    }
+    .section {
+      margin-top: 18px;
+      background: var(--card);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 24px rgba(28, 21, 52, 0.15);
+    }
+    .section h2 {
+      margin-top: 0;
+      color: #4b125f;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(130, 28, 93, 0.12);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .card h3 { margin: 0 0 8px; font-size: 18px; color: #6a1040; }
+    .card p { margin: 0; line-height: 1.6; font-size: 14px; }
+    .timeline {
+      display: grid;
+      gap: 10px;
+    }
+    .item {
+      border-left: 4px solid #8b1d7b;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.75);
+      border-radius: 0 10px 10px 0;
+    }
+    .item b { color: #5b0d72; }
+    .audio-box {
+      position: fixed;
+      left: 14px;
+      bottom: 14px;
+      z-index: 6;
+      background: rgba(255,255,255,0.8);
+      border-radius: 14px;
+      padding: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .audio-box button {
+      border: 0;
+      background: #82245f;
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    @media (max-width: 680px) {
+      .nav a { margin-left: 10px; font-size: 13px; }
+      .audio-box { width: calc(100vw - 28px); }
+      .audio-box audio { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="veil"></div>
+  <header class="topbar">
+    <div class="brand">WF香水世界</div>
+    <nav class="nav">
+      <a href="/">首页</a>
+      <a href="/archives/">WF归档</a>
+      <a href="/letter/">留言栏</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <h1>Fragrance Atlas · WF</h1>
+      <p>
+        这里是一个完全独立的香气宇宙。你会看到香水从原料、工艺到文化影响的全景：
+        从柑橘与花材的明亮层次，到木质与树脂的深沉余韵，再到改变时代审美的经典香水。
+      </p>
+    </section>
+
+    <section class="section">
+      <h2>香水原料资料</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>柑橘调</h3>
+          <p>佛手柑、柠檬、苦橙叶带来开场的清新爆发，常用于前调，塑造明亮、干净和轻盈的第一印象。</p>
+        </article>
+        <article class="card">
+          <h3>花香调</h3>
+          <p>玫瑰、茉莉、晚香玉、鸢尾是香水核心语言。不同提取方式（原精、净油、蒸馏）决定层次与质感。</p>
+        </article>
+        <article class="card">
+          <h3>木质调</h3>
+          <p>檀香、雪松、香根草提供结构与骨架，让香气更稳重并延长留香时间，是中后调的关键支撑。</p>
+        </article>
+        <article class="card">
+          <h3>树脂与香脂</h3>
+          <p>乳香、没药、安息香、劳丹脂拥有温暖和神秘质感，常见于东方调与琥珀调配方中。</p>
+        </article>
+        <article class="card">
+          <h3>香辛料</h3>
+          <p>肉桂、豆蔻、丁香、黑胡椒赋予香水跳跃感与戏剧性，能瞬间提升辨识度与层次张力。</p>
+        </article>
+        <article class="card">
+          <h3>动物感与合成麝香</h3>
+          <p>现代香水多用安全合成麝香模拟皮肤温热感，强化“贴肤”“体香化”效果，提升扩散与持久度。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>古今经典香水与影响力</h2>
+      <div class="timeline">
+        <div class="item"><b>古埃及 Kyphi（公元前）</b>：仪式与药香结合，奠定了“香气可承载文化与宗教”的观念。</div>
+        <div class="item"><b>1709 · Eau de Cologne（科隆水）</b>：现代清新古龙风格起点，影响至今男香与中性香审美。</div>
+        <div class="item"><b>1921 · Chanel No.5</b>：醛香革命，抽象花香成为高级时装香水时代标志。</div>
+        <div class="item"><b>1925 · Guerlain Shalimar</b>：东方调里程碑，香草与树脂构成奢华性感模板。</div>
+        <div class="item"><b>1947 · Miss Dior</b>：战后法式优雅象征，让时装品牌香水叙事真正全球化。</div>
+        <div class="item"><b>1992 · Angel（Mugler）</b>：美食调爆发，焦糖与广藿香开创新世代重甜香风潮。</div>
+        <div class="item"><b>1994 · CK One</b>：中性香普及化，打破“男香/女香”单一边界。</div>
+        <div class="item"><b>2006 · Terre d'Hermes</b>：矿物感木质柑橘典范，重塑当代男香质感标准。</div>
+        <div class="item"><b>2011 · Santal 33</b>：小众香商业化现象级案例，推动“个性签名香”潮流。</div>
+        <div class="item"><b>2015 · Baccarat Rouge 540</b>：高扩散甜木质风格风靡全球，影响大量后续配方趋势。</div>
+      </div>
+    </section>
+  </main>
+
+  <div class="audio-box">
+    <audio id="bgm" src="/webgal/game/bgm/Intro.mp3" controls loop autoplay></audio>
+    <button id="playBtn" type="button">播放背景音乐</button>
+  </div>
+
+  <script>
+    const bgm = document.getElementById('bgm');
+    const playBtn = document.getElementById('playBtn');
+    bgm.volume = 0.4;
+
+    const tryPlay = async () => {
+      try {
+        await bgm.play();
+        playBtn.style.display = 'none';
+      } catch (_) {
+        playBtn.style.display = 'inline-block';
+      }
+    };
+
+    playBtn.addEventListener('click', tryPlay);
+    tryPlay();
+  </script>
+</body>
+</html>
