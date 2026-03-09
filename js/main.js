@@ -847,7 +847,7 @@ document.addEventListener('DOMContentLoaded', function () {
       style.id = 'wf-ai-chat-style'
       style.textContent = `
 #wf-ai-chatbot{position:fixed;right:20px;bottom:24px;z-index:9999;font-family:Arial,sans-serif}
-#wf-ai-chatbot .wf-ai-toggle{width:52px;height:52px;border:none;border-radius:26px;background:#1f2937;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#wf-ai-chatbot .wf-ai-toggle{width:52px;height:52px;border:none;border-radius:26px;background:#1f2937;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25);touch-action:none;user-select:none}
 #wf-ai-chatbot .wf-ai-panel{display:none;position:absolute;right:0;bottom:64px;width:320px;max-width:calc(100vw - 24px);height:440px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 10px 36px rgba(0,0,0,.22)}
 #wf-ai-chatbot.open .wf-ai-panel{display:flex;flex-direction:column}
 #wf-ai-chatbot .wf-ai-head{padding:10px 12px;background:#111827;color:#fff;font-size:14px}
@@ -881,6 +881,63 @@ document.addEventListener('DOMContentLoaded', function () {
     const $body = root.querySelector('.wf-ai-body')
     const $input = root.querySelector('.wf-ai-input')
     const $send = root.querySelector('.wf-ai-send')
+    const positionKey = 'wf-ai-chatbot-pos'
+
+    const savedPos = localStorage.getItem(positionKey)
+    if (savedPos) {
+      try {
+        const { left, top } = JSON.parse(savedPos)
+        if (typeof left === 'number' && typeof top === 'number') {
+          root.style.left = `${left}px`
+          root.style.top = `${top}px`
+          root.style.right = 'auto'
+          root.style.bottom = 'auto'
+        }
+      } catch (_) {}
+    }
+
+    let dragging = false
+    let moved = false
+    let suppressToggleOnce = false
+    let dragOffsetX = 0
+    let dragOffsetY = 0
+
+    const clamp = (val, min, max) => Math.min(Math.max(val, min), max)
+
+    const onPointerMove = e => {
+      if (!dragging) return
+      moved = true
+      const left = clamp(e.clientX - dragOffsetX, 8, window.innerWidth - 72)
+      const top = clamp(e.clientY - dragOffsetY, 8, window.innerHeight - 72)
+      root.style.left = `${left}px`
+      root.style.top = `${top}px`
+      root.style.right = 'auto'
+      root.style.bottom = 'auto'
+    }
+
+    const stopDrag = () => {
+      if (!dragging) return
+      dragging = false
+      if (moved) {
+        suppressToggleOnce = true
+        localStorage.setItem(positionKey, JSON.stringify({
+          left: parseFloat(root.style.left) || 0,
+          top: parseFloat(root.style.top) || 0
+        }))
+      }
+      window.removeEventListener('pointermove', onPointerMove)
+      window.removeEventListener('pointerup', stopDrag)
+    }
+
+    $toggle.addEventListener('pointerdown', e => {
+      const rect = root.getBoundingClientRect()
+      dragging = true
+      moved = false
+      dragOffsetX = e.clientX - rect.left
+      dragOffsetY = e.clientY - rect.top
+      window.addEventListener('pointermove', onPointerMove)
+      window.addEventListener('pointerup', stopDrag)
+    })
 
     const appendMsg = (role, text) => {
       const el = document.createElement('div')
@@ -917,7 +974,14 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
-    $toggle.addEventListener('click', () => root.classList.toggle('open'))
+    $toggle.addEventListener('click', e => {
+      if (suppressToggleOnce) {
+        suppressToggleOnce = false
+        e.preventDefault()
+        return
+      }
+      root.classList.toggle('open')
+    })
     $send.addEventListener('click', sendMessage)
     $input.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) {
