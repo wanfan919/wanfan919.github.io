@@ -822,6 +822,97 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
+  const initAiChatbot = () => {
+    if (document.getElementById('wf-ai-chatbot')) return
+
+    const cfg = window.WF_AI_CHAT || {}
+    const endpoint = cfg.endpoint || 'https://your-worker-domain.example.com/chat'
+
+    if (!document.getElementById('wf-ai-chat-style')) {
+      const style = document.createElement('style')
+      style.id = 'wf-ai-chat-style'
+      style.textContent = `
+#wf-ai-chatbot{position:fixed;right:20px;bottom:24px;z-index:9999;font-family:Arial,sans-serif}
+#wf-ai-chatbot .wf-ai-toggle{width:52px;height:52px;border:none;border-radius:26px;background:#1f2937;color:#fff;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+#wf-ai-chatbot .wf-ai-panel{display:none;position:absolute;right:0;bottom:64px;width:320px;max-width:calc(100vw - 24px);height:440px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;box-shadow:0 10px 36px rgba(0,0,0,.22)}
+#wf-ai-chatbot.open .wf-ai-panel{display:flex;flex-direction:column}
+#wf-ai-chatbot .wf-ai-head{padding:10px 12px;background:#111827;color:#fff;font-size:14px}
+#wf-ai-chatbot .wf-ai-body{flex:1;padding:10px;overflow:auto;background:#f9fafb}
+#wf-ai-chatbot .wf-ai-msg{margin:8px 0;line-height:1.45;font-size:13px;white-space:pre-wrap}
+#wf-ai-chatbot .wf-ai-msg.user{text-align:right;color:#1f2937}
+#wf-ai-chatbot .wf-ai-msg.bot{color:#111827}
+#wf-ai-chatbot .wf-ai-foot{display:flex;gap:8px;padding:10px;border-top:1px solid #e5e7eb;background:#fff}
+#wf-ai-chatbot .wf-ai-input{flex:1;padding:8px;border:1px solid #d1d5db;border-radius:8px;font-size:13px}
+#wf-ai-chatbot .wf-ai-send{border:none;background:#2563eb;color:#fff;border-radius:8px;padding:0 12px;cursor:pointer}
+      `
+      document.head.appendChild(style)
+    }
+
+    const root = document.createElement('div')
+    root.id = 'wf-ai-chatbot'
+    root.innerHTML = `
+      <button class="wf-ai-toggle" type="button" title="AI助手">AI</button>
+      <div class="wf-ai-panel">
+        <div class="wf-ai-head">WF AI 助手</div>
+        <div class="wf-ai-body"></div>
+        <div class="wf-ai-foot">
+          <input class="wf-ai-input" placeholder="输入问题后回车..." />
+          <button class="wf-ai-send" type="button">发送</button>
+        </div>
+      </div>
+    `
+    document.body.appendChild(root)
+
+    const $toggle = root.querySelector('.wf-ai-toggle')
+    const $body = root.querySelector('.wf-ai-body')
+    const $input = root.querySelector('.wf-ai-input')
+    const $send = root.querySelector('.wf-ai-send')
+
+    const appendMsg = (role, text) => {
+      const el = document.createElement('div')
+      el.className = `wf-ai-msg ${role}`
+      el.textContent = text
+      $body.appendChild(el)
+      $body.scrollTop = $body.scrollHeight
+    }
+
+    const sendMessage = async () => {
+      const content = $input.value.trim()
+      if (!content) return
+      if (!endpoint || endpoint.includes('your-worker-domain.example.com')) {
+        appendMsg('bot', '未配置 AI 接口。请先按 AI_CHAT_SETUP.md 完成 endpoint 配置。')
+        return
+      }
+
+      appendMsg('user', content)
+      $input.value = ''
+      appendMsg('bot', '思考中...')
+      const loadingEl = $body.lastElementChild
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: content, history: [] })
+        })
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
+        const data = await res.json()
+        loadingEl.textContent = (data && data.reply) ? data.reply : '模型未返回内容。'
+      } catch (err) {
+        loadingEl.textContent = `请求失败：${err.message}`
+      }
+    }
+
+    $toggle.addEventListener('click', () => root.classList.toggle('open'))
+    $send.addEventListener('click', sendMessage)
+    $input.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault()
+        sendMessage()
+      }
+    })
+  }
+
   const unRefreshFn = function () {
     window.addEventListener('resize', () => {
       adjustMenu(false)
@@ -833,6 +924,7 @@ document.addEventListener('DOMContentLoaded', function () {
     clickFnOfSubMenu()
     GLOBAL_CONFIG.islazyload && lazyloadImg()
     GLOBAL_CONFIG.copyright !== undefined && addCopyright()
+    initAiChatbot()
 
     if (GLOBAL_CONFIG.autoDarkmode) {
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
