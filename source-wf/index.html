@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>源--WF</title>
+  <meta name="description" content="源--WF：多人协作流浪小说平台。">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #22d3ee;
+      --accent-2: #a78bfa;
+      --danger: #ef4444;
+      --ok: #10b981;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--text);
+      background: radial-gradient(circle at 20% 10%, #1e293b, #020617 56%);
+      font-family: "PingFang SC", "Noto Sans SC", sans-serif;
+    }
+    .wrap { width: min(1200px, 94vw); margin: 20px auto 40px; }
+    .top {
+      display: flex; justify-content: space-between; align-items: center; gap: 12px;
+      margin-bottom: 16px;
+    }
+    .title {
+      font-size: clamp(28px, 5vw, 46px); font-weight: 800;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .top a { color: #d1d5db; text-decoration: none; font-size: 14px; }
+    .note { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+
+    .layout { display: grid; grid-template-columns: 320px 1fr; gap: 14px; }
+    .panel { background: rgba(17, 24, 39, 0.92); border: 1px solid #374151; border-radius: 14px; padding: 14px; }
+    .panel h3 { margin: 0 0 12px; }
+
+    .auth-row, .new-row { display: grid; gap: 8px; }
+    input, textarea, button {
+      width: 100%; border-radius: 10px; border: 1px solid #374151; background: #0b1220;
+      color: var(--text); padding: 10px;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    button { cursor: pointer; background: linear-gradient(90deg, #0ea5e9, #8b5cf6); border: none; }
+    button.ghost { background: #1f2937; border: 1px solid #4b5563; }
+    button.danger { background: #991b1b; }
+    .btn-row { display: flex; gap: 8px; }
+
+    .project-list { max-height: 520px; overflow: auto; display: grid; gap: 8px; }
+    .project-item {
+      border: 1px solid #374151; border-radius: 10px; padding: 10px; cursor: pointer;
+      background: #0b1220;
+    }
+    .project-item.active { border-color: var(--accent); }
+    .project-meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+
+    .segments { max-height: 420px; overflow: auto; display: grid; gap: 10px; margin-bottom: 10px; }
+    .seg { border-left: 3px solid #22d3ee; padding: 8px 10px; background: #0b1220; border-radius: 0 8px 8px 0; }
+    .seg .who { color: #93c5fd; font-size: 12px; margin-bottom: 4px; }
+    .status { font-size: 13px; margin: 8px 0; color: var(--muted); }
+    .status.ok { color: var(--ok); }
+    .status.err { color: var(--danger); }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">源--WF</div>
+      <a href="/">返回首页</a>
+    </div>
+    <div class="note">流浪小说：注册登录后可创建项目，所有访客都可续写。每次续写都记录账号名；同一时间仅一人可写。</div>
+
+    <div id="configWarning" class="panel status err" style="display:none;"></div>
+
+    <div class="layout">
+      <section class="panel">
+        <h3>账号</h3>
+        <div id="authState" class="status">未登录</div>
+        <div class="auth-row">
+          <input id="username" placeholder="账号名（3-20字符）">
+          <input id="password" type="password" placeholder="密码（至少6位）">
+          <div class="btn-row">
+            <button id="registerBtn" class="ghost">注册</button>
+            <button id="loginBtn">登录</button>
+            <button id="logoutBtn" class="ghost">退出</button>
+          </div>
+        </div>
+
+        <h3 style="margin-top:18px;">新建流浪小说项目</h3>
+        <div class="new-row">
+          <input id="projectName" placeholder="项目名，例如：雪夜城邦">
+          <textarea id="starterText" placeholder="留空则 AI 生成开头；也可自己写开头"></textarea>
+          <button id="createBtn">新建项目</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h3>项目与续写</h3>
+        <div class="layout" style="grid-template-columns: 260px 1fr; gap:12px;">
+          <div>
+            <div class="project-list" id="projectList"></div>
+          </div>
+          <div>
+            <div id="projectTitle" style="font-size:20px;font-weight:700;margin-bottom:6px;">请选择一个项目</div>
+            <div id="projectStatus" class="status"></div>
+            <div id="segments" class="segments"></div>
+
+            <textarea id="continuation" placeholder="输入你的续写..." disabled></textarea>
+            <div class="btn-row" style="margin-top:8px;">
+              <button id="lockBtn" class="ghost">申请续写权</button>
+              <button id="appendBtn">提交续写</button>
+              <button id="completeBtn" class="danger">完成项目</button>
+            </div>
+            <div id="actionMsg" class="status"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = 'https://your-source-wf-worker.example.com';
+    const TOKEN_KEY = 'source_wf_token';
+    const USER_KEY = 'source_wf_user';
+
+    const state = {
+      token: localStorage.getItem(TOKEN_KEY) || '',
+      user: localStorage.getItem(USER_KEY) || '',
+      projects: [],
+      currentProjectId: null,
+      currentProject: null,
+      lockKeepAliveTimer: null
+    };
+
+    const $ = id => document.getElementById(id);
+
+    const setActionMsg = (msg, cls = '') => {
+      const el = $('actionMsg');
+      el.className = `status ${cls}`;
+      el.textContent = msg;
+    };
+
+    const setAuthState = () => {
+      $('authState').textContent = state.user ? `已登录：${state.user}` : '未登录';
+    };
+
+    const api = async (path, options = {}) => {
+      const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
+      if (state.token) headers.Authorization = `Bearer ${state.token}`;
+      const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      return data;
+    };
+
+    const renderProjects = () => {
+      const list = $('projectList');
+      list.innerHTML = '';
+      state.projects.forEach(p => {
+        const div = document.createElement('div');
+        div.className = `project-item${p.id === state.currentProjectId ? ' active' : ''}`;
+        div.innerHTML = `<div>${p.name}</div><div class="project-meta">${p.status === 'completed' ? '已完成' : '进行中'} · 创建者：${p.creator_name}</div>`;
+        div.onclick = () => selectProject(p.id);
+        list.appendChild(div);
+      });
+    };
+
+    const renderProjectDetail = () => {
+      const p = state.currentProject;
+      if (!p) {
+        $('projectTitle').textContent = '请选择一个项目';
+        $('projectStatus').textContent = '';
+        $('segments').innerHTML = '';
+        return;
+      }
+      $('projectTitle').textContent = p.name;
+      const lockText = p.lock_owner_name ? `当前续写者：${p.lock_owner_name}` : '当前无人续写';
+      const doneText = p.status === 'completed' ? '已完成' : '进行中';
+      $('projectStatus').textContent = `${doneText} · ${lockText}`;
+
+      const seg = $('segments');
+      seg.innerHTML = '';
+      p.segments.forEach(s => {
+        const item = document.createElement('div');
+        item.className = 'seg';
+        item.innerHTML = `<div class="who">${s.username}</div><div>${s.content.replace(/</g, '&lt;')}</div>`;
+        seg.appendChild(item);
+      });
+
+      const canWrite = p.status !== 'completed' && p.lock_owner_name === state.user;
+      $('continuation').disabled = !canWrite;
+      $('appendBtn').disabled = !canWrite;
+      $('completeBtn').disabled = !(state.user && p.status !== 'completed' && p.creator_name === state.user);
+    };
+
+    const loadProjects = async () => {
+      const data = await api('/api/projects', { method: 'GET' });
+      state.projects = data.projects || [];
+      renderProjects();
+      if (state.currentProjectId) {
+        await loadProjectDetail(state.currentProjectId);
+      }
+    };
+
+    const loadProjectDetail = async (id) => {
+      const data = await api(`/api/projects/${id}`, { method: 'GET' });
+      state.currentProject = data.project;
+      state.currentProjectId = id;
+      renderProjects();
+      renderProjectDetail();
+    };
+
+    const selectProject = async (id) => {
+      try {
+        await loadProjectDetail(id);
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    };
+
+    const startLockHeartbeat = () => {
+      stopLockHeartbeat();
+      state.lockKeepAliveTimer = setInterval(async () => {
+        if (!state.currentProjectId || !state.token) return;
+        try {
+          await api(`/api/projects/${state.currentProjectId}/lock`, { method: 'POST', body: '{}' });
+        } catch (_) {}
+      }, 20000);
+    };
+
+    const stopLockHeartbeat = () => {
+      if (state.lockKeepAliveTimer) clearInterval(state.lockKeepAliveTimer);
+      state.lockKeepAliveTimer = null;
+    };
+
+    $('registerBtn').onclick = async () => {
+      try {
+        await api('/api/register', {
+          method: 'POST',
+          body: JSON.stringify({ username: $('username').value.trim(), password: $('password').value })
+        });
+        setActionMsg('注册成功，请登录', 'ok');
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    };
+
+    $('loginBtn').onclick = async () => {
+      try {
+        const data = await api('/api/login', {
+          method: 'POST',
+          body: JSON.stringify({ username: $('username').value.trim(), password: $('password').value })
+        });
+        state.token = data.token;
+        state.user = data.username;
+        localStorage.setItem(TOKEN_KEY, state.token);
+        localStorage.setItem(USER_KEY, state.user);
+        setAuthState();
+        setActionMsg('登录成功', 'ok');
+        await loadProjects();
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    };
+
+    $('logoutBtn').onclick = () => {
+      state.token = '';
+      state.user = '';
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(USER_KEY);
+      stopLockHeartbeat();
+      setAuthState();
+      setActionMsg('已退出登录', 'ok');
+      renderProjectDetail();
+    };
+
+    $('createBtn').onclick = async () => {
+      try {
+        if (!state.token) throw new Error('请先登录');
+        await api('/api/projects', {
+          method: 'POST',
+          body: JSON.stringify({
+            name: $('projectName').value.trim(),
+            starterText: $('starterText').value.trim()
+          })
+        });
+        $('projectName').value = '';
+        $('starterText').value = '';
+        await loadProjects();
+        setActionMsg('项目已创建', 'ok');
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    };
+
+    $('lockBtn').onclick = async () => {
+      try {
+        if (!state.currentProjectId) throw new Error('请先选择项目');
+        if (!state.token) throw new Error('请先登录');
+        await api(`/api/projects/${state.currentProjectId}/lock`, { method: 'POST', body: '{}' });
+        startLockHeartbeat();
+        await loadProjectDetail(state.currentProjectId);
+        setActionMsg('已获得续写权（每20秒自动续期）', 'ok');
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    };
+
+    $('appendBtn').onclick = async () => {
+      try {
+        const content = $('continuation').value.trim();
+        if (!content) throw new Error('续写内容不能为空');
+        await api(`/api/projects/${state.currentProjectId}/segments`, {
+          method: 'POST',
+          body: JSON.stringify({ content })
+        });
+        $('continuation').value = '';
+        await loadProjectDetail(state.currentProjectId);
+        setActionMsg('续写已提交', 'ok');
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    };
+
+    $('completeBtn').onclick = async () => {
+      try {
+        await api(`/api/projects/${state.currentProjectId}/complete`, { method: 'POST', body: '{}' });
+        stopLockHeartbeat();
+        await loadProjectDetail(state.currentProjectId);
+        await loadProjects();
+        setActionMsg('项目已完成', 'ok');
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    };
+
+    window.addEventListener('beforeunload', () => {
+      if (state.currentProjectId && state.token) {
+        navigator.sendBeacon(`${API_BASE}/api/projects/${state.currentProjectId}/unlock`, new Blob(['{}'], { type: 'application/json' }));
+      }
+    });
+
+    const boot = async () => {
+      if (API_BASE.includes('your-source-wf-worker.example.com')) {
+        $('configWarning').style.display = 'block';
+        $('configWarning').textContent = '未配置后端接口：请将 source-wf/index.html 里的 API_BASE 替换为你的 Worker 地址。';
+      }
+      setAuthState();
+      try {
+        await loadProjects();
+      } catch (_) {}
+      setInterval(() => {
+        if (state.currentProjectId) loadProjectDetail(state.currentProjectId).catch(() => {});
+        loadProjects().catch(() => {});
+      }, 8000);
+    };
+
+    boot();
+  </script>
+</body>
+</html>

@@ -1005,6 +1005,27 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
+  const injectSourceWFMenuLink = () => {
+    const menus = document.querySelectorAll('.menus_items')
+    if (!menus.length) return
+
+    menus.forEach(menu => {
+      let link = menu.querySelector('a.site-page[href="/source-wf/"]')
+      if (!link) {
+        const item = document.createElement('div')
+        item.className = 'menus_item'
+        item.innerHTML = '<a class="site-page" href="/source-wf/"><i class="fa-fw fas fa-feather-pointed"></i><span> 源--WF</span></a>'
+        menu.insertBefore(item, menu.firstChild)
+        return
+      }
+
+      const item = link.closest('.menus_item')
+      if (item && menu.firstChild !== item) {
+        menu.insertBefore(item, menu.firstChild)
+      }
+    })
+  }
+
   const removeCategorySections = () => {
     const removeItemByLink = href => {
       document.querySelectorAll(`a[href="${href}"]`).forEach(link => {
@@ -1059,6 +1080,7 @@ document.addEventListener('DOMContentLoaded', function () {
   window.refreshFn = function () {
     initAdjust()
     removeCategorySections()
+    injectSourceWFMenuLink()
     injectPerfumeMenuLink()
 
     if (GLOBAL_CONFIG_SITE.isPost) {
