@@ -822,6 +822,20 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
+  const initSingleMediaPlayback = () => {
+    if (window.__wfSingleMediaPlaybackBound) return
+    window.__wfSingleMediaPlaybackBound = true
+
+    document.addEventListener('play', e => {
+      const current = e.target
+      if (!(current instanceof HTMLMediaElement)) return
+
+      document.querySelectorAll('audio, video').forEach(media => {
+        if (media !== current && !media.paused) media.pause()
+      })
+    }, true)
+  }
+
   const initAiChatbot = () => {
     if (document.getElementById('wf-ai-chatbot')) return
 
@@ -924,6 +938,7 @@ document.addEventListener('DOMContentLoaded', function () {
     clickFnOfSubMenu()
     GLOBAL_CONFIG.islazyload && lazyloadImg()
     GLOBAL_CONFIG.copyright !== undefined && addCopyright()
+    initSingleMediaPlayback()
     initAiChatbot()
 
     if (GLOBAL_CONFIG.autoDarkmode) {
