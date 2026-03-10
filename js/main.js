@@ -1055,6 +1055,33 @@ document.addEventListener('DOMContentLoaded', function () {
     })
   }
 
+  const removeAboutWFSections = () => {
+    const removeItemByLink = href => {
+      document.querySelectorAll(`a[href="${href}"]`).forEach(link => {
+        const menuItem = link.closest('.menus_item')
+        if (menuItem) {
+          menuItem.remove()
+          return
+        }
+        link.remove()
+      })
+    }
+
+    removeItemByLink('/about/')
+
+    document.querySelectorAll('.menus_item, a.site-page').forEach(node => {
+      const text = (node.textContent || '').trim()
+      if (text.includes('关于WF') || text.toLowerCase().includes('about wf')) {
+        node.remove()
+      }
+    })
+
+    if (GLOBAL_CONFIG_SITE && GLOBAL_CONFIG_SITE.isHome) {
+      const homeTitle = document.getElementById('site-title')
+      if (homeTitle) homeTitle.remove()
+    }
+  }
+
   const unRefreshFn = function () {
     window.addEventListener('resize', () => {
       adjustMenu(false)
@@ -1080,6 +1107,7 @@ document.addEventListener('DOMContentLoaded', function () {
   window.refreshFn = function () {
     initAdjust()
     removeCategorySections()
+    removeAboutWFSections()
     injectSourceWFMenuLink()
     injectPerfumeMenuLink()
 
