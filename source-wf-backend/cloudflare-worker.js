@@ -81,6 +81,10 @@ export default {
         const user = await requireAuth(request, env)
         return await readNotification(env, Number(readNoticeMatch[1]), user)
       }
+      if (request.method === 'POST' && url.pathname === '/api/notifications/read-all') {
+        const user = await requireAuth(request, env)
+        return await readAllNotifications(env, user)
+      }
 
       if (request.method === 'GET' && url.pathname === '/api/admin/overview') {
         const user = await requireAdmin(request, env)
@@ -471,6 +475,12 @@ async function adminReopenProject(env, projectId, adminUser) {
 }
 
 async function listNotifications(env, user) {
+  const now = Date.now()
+  const keepMs = 3 * 24 * 60 * 60 * 1000
+  await env.DB.prepare(
+    'DELETE FROM notifications WHERE user_id = ? AND read_at IS NOT NULL AND read_at <= ?'
+  ).bind(user.uid, now - keepMs).run()
+
   const { results } = await env.DB.prepare(`
     SELECT
       n.id,
@@ -489,13 +499,22 @@ async function listNotifications(env, user) {
     LIMIT 100
   `).bind(user.uid).all()
 
-  return json({ notifications: results || [] })
+  const unreadCount = (results || []).reduce((acc, item) => acc + (item.read_at ? 0 : 1), 0)
+  return json({ notifications: results || [], unreadCount })
 }
 
 async function readNotification(env, notificationId, user) {
   await env.DB.prepare(
     'UPDATE notifications SET read_at = ? WHERE id = ? AND user_id = ? AND read_at IS NULL'
   ).bind(Date.now(), notificationId, user.uid).run()
+
+  return json({ ok: true })
+}
+
+async function readAllNotifications(env, user) {
+  await env.DB.prepare(
+    'UPDATE notifications SET read_at = ? WHERE user_id = ? AND read_at IS NULL'
+  ).bind(Date.now(), user.uid).run()
 
   return json({ ok: true })
 }
