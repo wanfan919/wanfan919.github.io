@@ -411,7 +411,15 @@
 
       const usersBox = $('adminUsers');
       usersBox.innerHTML = users.length
-        ? users.map(u => `<div class="mini-item"><div><strong>${esc(u.username)}</strong></div><div class="mini-meta">创建项目数：${u.project_count || 0} · 注册：${fmt(u.created_at)}</div></div>`).join('')
+        ? users.map(u => `
+          <div class="mini-item">
+            <div><strong>${esc(u.username)}</strong></div>
+            <div class="mini-meta">创建项目数：${u.project_count || 0} · 注册：${fmt(u.created_at)}</div>
+            <div class="btn-row" style="margin-top:6px;">
+              <button class="danger" data-admin-user-action="delete-user" data-user-id="${u.id}" data-username="${esc(u.username)}">删除账号</button>
+            </div>
+          </div>
+        `).join('')
         : '<div class="mini-item">暂无其他用户。</div>';
 
       const pBox = $('adminProjects');
@@ -711,6 +719,36 @@
         await loadAdminOverview();
         await loadNotifications();
         setActionMsg(`管理员操作已执行：${actionTextMap[action] || action}`, 'ok');
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    });
+
+    $('adminUsers').addEventListener('click', async (e) => {
+      const target = e.target.closest('button[data-admin-user-action]');
+      if (!target) return;
+
+      try {
+        if (!state.isAdmin) throw new Error('仅管理员可执行此操作');
+        const action = target.dataset.adminUserAction;
+        const userId = Number(target.dataset.userId || 0);
+        const username = target.dataset.username || `ID:${userId}`;
+        if (action !== 'delete-user' || !userId) return;
+
+        const ok = confirm(`确认删除账号「${username}」？\n该账号的项目、续写、留言和通知会被永久删除。`);
+        if (!ok) return;
+
+        await api(`/api/admin/users/${userId}`, { method: 'DELETE' });
+
+        if (state.currentProject && state.currentProject.creator_name === username) {
+          state.currentProject = null;
+          state.currentProjectId = null;
+          renderProjectDetail();
+        }
+        await loadProjects();
+        await loadAdminOverview();
+        await loadNotifications();
+        setActionMsg(`账号已删除：${username}`, 'ok');
       } catch (err) {
         setActionMsg(err.message, 'err');
       }

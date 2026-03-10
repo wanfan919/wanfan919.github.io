@@ -96,6 +96,12 @@ export default {
         return await adminSendMessage(request, env, user)
       }
 
+      const adminUserMatch = url.pathname.match(/^\/api\/admin\/users\/(\d+)$/)
+      if (request.method === 'DELETE' && adminUserMatch) {
+        const user = await requireAdmin(request, env)
+        return await adminDeleteUser(env, Number(adminUserMatch[1]), user)
+      }
+
       const adminProjectMatch = url.pathname.match(/^\/api\/admin\/projects\/(\d+)\/(force-delete|force-complete|reopen)$/)
       if (request.method === 'POST' && adminProjectMatch) {
         const user = await requireAdmin(request, env)
@@ -399,6 +405,38 @@ async function adminSendMessage(request, env, adminUser) {
     content,
     projectId: null
   })
+
+  return json({ ok: true })
+}
+
+async function adminDeleteUser(env, targetUserId, adminUser) {
+  if (!targetUserId) throw httpError('用户无效', 400)
+  if (targetUserId === adminUser.uid) throw httpError('不能删除当前管理员账号', 400)
+
+  const adminName = env.ADMIN_USERNAME || 'Administrator'
+  const target = await env.DB.prepare(
+    'SELECT id, username FROM users WHERE id = ?'
+  ).bind(targetUserId).first()
+  if (!target) throw httpError('账号不存在', 404)
+  if (target.username === adminName) throw httpError('不能删除管理员账号', 403)
+
+  const { results: createdProjects } = await env.DB.prepare(
+    'SELECT id FROM projects WHERE creator_user_id = ?'
+  ).bind(targetUserId).all()
+  const projectIds = (createdProjects || []).map(row => Number(row.id)).filter(Boolean)
+
+  for (const projectId of projectIds) {
+    await env.DB.prepare('DELETE FROM segments WHERE project_id = ?').bind(projectId).run()
+  }
+  await env.DB.prepare('DELETE FROM projects WHERE creator_user_id = ?').bind(targetUserId).run()
+
+  await env.DB.prepare('DELETE FROM segments WHERE user_id = ?').bind(targetUserId).run()
+  await env.DB.prepare('DELETE FROM messages WHERE user_id = ?').bind(targetUserId).run()
+  await env.DB.prepare('DELETE FROM notifications WHERE user_id = ? OR from_user_id = ?').bind(targetUserId, targetUserId).run()
+  await env.DB.prepare(
+    'UPDATE projects SET lock_user_id = NULL, lock_expires_at = NULL WHERE lock_user_id = ?'
+  ).bind(targetUserId).run()
+  await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(targetUserId).run()
 
   return json({ ok: true })
 }
