@@ -495,7 +495,7 @@ async function listNotifications(env, user) {
     FROM notifications n
     LEFT JOIN users fu ON fu.id = n.from_user_id
     WHERE n.user_id = ?
-    ORDER BY n.created_at DESC
+    ORDER BY n.id DESC
     LIMIT 100
   `).bind(user.uid).all()
 
@@ -717,7 +717,11 @@ function corsHeaders() {
 function json(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
     status,
-    headers: { 'Content-Type': 'application/json', ...corsHeaders() }
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+      ...corsHeaders()
+    }
   })
 }
 

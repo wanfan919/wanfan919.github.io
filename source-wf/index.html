@@ -295,7 +295,8 @@
     const api = async (path, options = {}) => {
       const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
       if (state.token) headers.Authorization = `Bearer ${state.token}`;
-      const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+      const fetchPath = options.method === 'GET' ? `${API_BASE}${path}${path.includes('?') ? '&' : '?'}_ts=${Date.now()}` : `${API_BASE}${path}`;
+      const res = await fetch(fetchPath, { ...options, headers, cache: 'no-store' });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
       return data;
@@ -369,7 +370,7 @@
         const from = n.from_username ? `来自：${esc(n.from_username)}` : '系统通知';
         const unreadDot = n.read_at ? '' : '<span class="unread-dot"></span>';
         row.innerHTML = `
-          <div>${unreadDot}<strong>${esc(n.title)}</strong></div>
+          <div>${unreadDot}<strong>${esc(n.title)}</strong> <span class="mini-meta">#${n.id}</span></div>
           <div style="margin-top:4px;">${esc(n.content)}</div>
           <div class="mini-meta">${from} · ${fmt(n.created_at)}</div>
         `;
