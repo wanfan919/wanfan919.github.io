@@ -129,7 +129,7 @@
   </div>
 
   <script>
-    const API_BASE = 'https://your-source-wf-worker.example.com';
+    const API_BASE = 'https://hidden-rain-bb9b.fanwan919.workers.dev';
     const TOKEN_KEY = 'source_wf_token';
     const USER_KEY = 'source_wf_user';
 
@@ -363,7 +363,7 @@
     });
 
     const boot = async () => {
-      if (API_BASE.includes('your-source-wf-worker.example.com')) {
+      if (!API_BASE) {
         $('configWarning').style.display = 'block';
         $('configWarning').textContent = '未配置后端接口：请将 source-wf/index.html 里的 API_BASE 替换为你的 Worker 地址。';
       }

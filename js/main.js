@@ -840,7 +840,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('wf-ai-chatbot')) return
 
     const cfg = window.WF_AI_CHAT || {}
-    const endpoint = cfg.endpoint || 'https://your-worker-domain.example.com/chat'
+    const endpoint = cfg.endpoint || 'https://hidden-rain-bb9b.fanwan919.workers.dev/chat'
 
     if (!document.getElementById('wf-ai-chat-style')) {
       const style = document.createElement('style')
@@ -950,8 +950,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const sendMessage = async () => {
       const content = $input.value.trim()
       if (!content) return
-      if (!endpoint || endpoint.includes('your-worker-domain.example.com')) {
-        appendMsg('bot', '未配置 AI 接口。请先按 AI_CHAT_SETUP.md 完成 endpoint 配置。')
+      if (!endpoint) {
+        appendMsg('bot', '未配置 AI 接口。')
         return
       }
 

@@ -7,6 +7,10 @@ export default {
     }
 
     try {
+      if (request.method === 'POST' && url.pathname === '/chat') {
+        return await chat(request, env)
+      }
+
       if (request.method === 'POST' && url.pathname === '/api/register') {
         return await register(request, env)
       }
@@ -238,30 +242,13 @@ async function completeProject(env, projectId, user) {
 }
 
 async function generateStarter(env, projectName) {
-  if (env.OPENAI_API_KEY) {
-    try {
-      const upstream = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: env.OPENAI_MODEL || 'gpt-4.1-mini',
-          messages: [
-            { role: 'system', content: '你是文学写作助手，请用中文写一段富有画面感的小说开头，120-220字。' },
-            { role: 'user', content: `请为流浪小说项目《${projectName}》写开头。` }
-          ],
-          temperature: 0.9
-        })
-      })
-      if (upstream.ok) {
-        const data = await upstream.json()
-        const txt = data?.choices?.[0]?.message?.content?.trim()
-        if (txt) return txt
-      }
-    } catch (_) {}
-  }
+  const prompt = `请为流浪小说项目《${projectName}》写开头。`
+  const txt = await generateText(env, [
+    { role: 'system', content: '你是文学写作助手，请用中文写一段富有画面感的小说开头，120-220字。' },
+    { role: 'user', content: prompt }
+  ], { temperature: 0.9, maxTokens: 380 })
+
+  if (txt) return txt
 
   const fallback = [
     '傍晚的风吹过废弃站台，广播里反复播着一段失真的旋律。你推开锈蚀的门时，地上那行粉笔字还没被雨冲掉：如果你看到这里，故事已经开始。',
@@ -269,6 +256,74 @@ async function generateStarter(env, projectName) {
     '旧城区的钟楼停在了七点十七分，所有人都默认它坏了，只有你知道那是提醒。每当夜色压下来，总会有人在钟声缺席的那一分钟里，听见另一个世界开门。'
   ]
   return fallback[Math.floor(Math.random() * fallback.length)]
+}
+
+async function chat(request, env) {
+  const body = await request.json()
+  const message = String(body.message || '').trim()
+  const history = Array.isArray(body.history) ? body.history : []
+
+  if (!message) throw httpError('message is required', 400)
+
+  const sanitizedHistory = history
+    .slice(-8)
+    .filter(it => it && (it.role === 'user' || it.role === 'assistant') && typeof it.content === 'string')
+    .map(it => ({ role: it.role, content: it.content }))
+
+  const reply = await generateText(env, [
+    { role: 'system', content: 'You are a concise and helpful website assistant.' },
+    ...sanitizedHistory,
+    { role: 'user', content: message }
+  ], { temperature: 0.7, maxTokens: 600 })
+
+  if (!reply) throw httpError('LLM is not configured or returned empty response', 502)
+  return json({ reply })
+}
+
+function getLlmConfig(env) {
+  const apiKey = env.LLM_API_KEY || env.OPENAI_API_KEY || env.DEEPSEEK_API_KEY || ''
+  const model =
+    env.LLM_MODEL ||
+    env.OPENAI_MODEL ||
+    env.DEEPSEEK_MODEL ||
+    (env.DEEPSEEK_API_KEY ? 'deepseek-chat' : 'gpt-4.1-mini')
+  const baseUrl =
+    env.LLM_BASE_URL ||
+    env.OPENAI_BASE_URL ||
+    (env.DEEPSEEK_API_KEY ? 'https://api.deepseek.com/v1' : 'https://api.openai.com/v1')
+
+  return {
+    apiKey,
+    model,
+    endpoint: `${String(baseUrl).replace(/\/+$/, '')}/chat/completions`
+  }
+}
+
+async function generateText(env, messages, options = {}) {
+  const cfg = getLlmConfig(env)
+  if (!cfg.apiKey) return ''
+
+  try {
+    const upstream = await fetch(cfg.endpoint, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${cfg.apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: cfg.model,
+        messages,
+        temperature: options.temperature ?? 0.8,
+        max_tokens: options.maxTokens ?? 512
+      })
+    })
+
+    if (!upstream.ok) return ''
+    const data = await upstream.json()
+    return String(data?.choices?.[0]?.message?.content || '').trim()
+  } catch (_) {
+    return ''
+  }
 }
 
 async function requireAuth(request, env) {
