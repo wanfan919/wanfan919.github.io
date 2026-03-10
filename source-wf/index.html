@@ -394,6 +394,7 @@
       const projects = state.adminOverview.projects || [];
 
       const select = $('adminUserSelect');
+      const prevSelected = select.value;
       select.innerHTML = '';
       if (!users.length) {
         const opt = document.createElement('option');
@@ -407,6 +408,9 @@
           opt.textContent = `${u.username}（项目 ${u.project_count || 0}）`;
           select.appendChild(opt);
         });
+        if (users.some(u => String(u.id) === prevSelected)) {
+          select.value = prevSelected;
+        }
       }
 
       const usersBox = $('adminUsers');
