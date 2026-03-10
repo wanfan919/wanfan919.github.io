@@ -840,7 +840,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (document.getElementById('wf-ai-chatbot')) return
 
     const cfg = window.WF_AI_CHAT || {}
-    const endpoint = cfg.endpoint || 'https://hidden-rain-bb9b.fanwan919.workers.dev/chat'
+    const endpoint = cfg.endpoint || 'https://hidden-rain-bb9b.wangderingfiction.workers.dev/chat'
 
     if (!document.getElementById('wf-ai-chat-style')) {
       const style = document.createElement('style')
