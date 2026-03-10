@@ -7,6 +7,8 @@ export default {
     }
 
     try {
+      await ensureMetaTables(env)
+
       if (request.method === 'POST' && url.pathname === '/chat') {
         return await chat(request, env)
       }
@@ -67,6 +69,38 @@ export default {
       if (request.method === 'DELETE' && messageMatch) {
         const user = await requireAuth(request, env)
         return await deleteMessage(env, Number(messageMatch[1]), user)
+      }
+
+      if (request.method === 'GET' && url.pathname === '/api/notifications') {
+        const user = await requireAuth(request, env)
+        return await listNotifications(env, user)
+      }
+
+      const readNoticeMatch = url.pathname.match(/^\/api\/notifications\/(\d+)\/read$/)
+      if (request.method === 'POST' && readNoticeMatch) {
+        const user = await requireAuth(request, env)
+        return await readNotification(env, Number(readNoticeMatch[1]), user)
+      }
+
+      if (request.method === 'GET' && url.pathname === '/api/admin/overview') {
+        const user = await requireAdmin(request, env)
+        return await adminOverview(env, user)
+      }
+
+      if (request.method === 'POST' && url.pathname === '/api/admin/message') {
+        const user = await requireAdmin(request, env)
+        return await adminSendMessage(request, env, user)
+      }
+
+      const adminProjectMatch = url.pathname.match(/^\/api\/admin\/projects\/(\d+)\/(force-delete|force-complete|reopen)$/)
+      if (request.method === 'POST' && adminProjectMatch) {
+        const user = await requireAdmin(request, env)
+        const projectId = Number(adminProjectMatch[1])
+        const action = adminProjectMatch[2]
+
+        if (action === 'force-delete') return await adminForceDeleteProject(env, projectId, user)
+        if (action === 'force-complete') return await adminForceCompleteProject(env, projectId, user)
+        return await adminReopenProject(env, projectId, user)
       }
 
       return json({ error: 'Not found' }, 404)
@@ -307,6 +341,165 @@ async function deleteProject(env, projectId, user) {
   return json({ ok: true })
 }
 
+async function adminOverview(env, adminUser) {
+  const { results: users } = await env.DB.prepare(`
+    SELECT
+      u.id,
+      u.username,
+      u.created_at,
+      (SELECT COUNT(1) FROM projects p WHERE p.creator_user_id = u.id) AS project_count
+    FROM users u
+    WHERE u.id != ?
+    ORDER BY u.created_at DESC
+  `).bind(adminUser.uid).all()
+
+  const { results: projects } = await env.DB.prepare(`
+    SELECT
+      p.id,
+      p.name,
+      p.status,
+      p.created_at,
+      p.completed_at,
+      p.creator_user_id,
+      u.username AS creator_name
+    FROM projects p
+    JOIN users u ON u.id = p.creator_user_id
+    ORDER BY p.created_at DESC
+  `).all()
+
+  return json({
+    users: users || [],
+    projects: projects || []
+  })
+}
+
+async function adminSendMessage(request, env, adminUser) {
+  const body = await request.json()
+  const toUserId = Number(body.toUserId || 0)
+  const title = String(body.title || '').trim()
+  const content = String(body.content || '').trim()
+
+  if (!toUserId) throw httpError('接收用户无效', 400)
+  if (!title) throw httpError('消息标题不能为空', 400)
+  if (!content) throw httpError('消息内容不能为空', 400)
+  if (toUserId === adminUser.uid) throw httpError('不能给自己发送管理员消息', 400)
+
+  const target = await env.DB.prepare('SELECT id FROM users WHERE id = ?').bind(toUserId).first()
+  if (!target) throw httpError('接收用户不存在', 404)
+
+  await insertNotification(env, {
+    userId: toUserId,
+    fromUserId: adminUser.uid,
+    type: 'admin_message',
+    title,
+    content,
+    projectId: null
+  })
+
+  return json({ ok: true })
+}
+
+async function adminForceDeleteProject(env, projectId, adminUser) {
+  const row = await env.DB.prepare(
+    'SELECT id, name, creator_user_id FROM projects WHERE id = ?'
+  ).bind(projectId).first()
+  if (!row) throw httpError('项目不存在', 404)
+
+  await env.DB.prepare('DELETE FROM segments WHERE project_id = ?').bind(projectId).run()
+  await env.DB.prepare('DELETE FROM projects WHERE id = ?').bind(projectId).run()
+
+  if (row.creator_user_id !== adminUser.uid) {
+    await insertNotification(env, {
+      userId: row.creator_user_id,
+      fromUserId: adminUser.uid,
+      type: 'admin_force_delete',
+      title: '管理员已强制删除项目',
+      content: `你的项目《${row.name}》已被管理员强制删除。`,
+      projectId
+    })
+  }
+
+  return json({ ok: true })
+}
+
+async function adminForceCompleteProject(env, projectId, adminUser) {
+  const row = await env.DB.prepare(
+    'SELECT id, name, status, creator_user_id FROM projects WHERE id = ?'
+  ).bind(projectId).first()
+  if (!row) throw httpError('项目不存在', 404)
+
+  await env.DB.prepare(
+    'UPDATE projects SET status = ?, completed_at = ?, lock_user_id = NULL, lock_expires_at = NULL WHERE id = ?'
+  ).bind('completed', Date.now(), projectId).run()
+
+  if (row.creator_user_id !== adminUser.uid) {
+    await insertNotification(env, {
+      userId: row.creator_user_id,
+      fromUserId: adminUser.uid,
+      type: 'admin_force_complete',
+      title: '管理员已强制完成项目',
+      content: `你的项目《${row.name}》已被管理员强制标记为完成。`,
+      projectId
+    })
+  }
+
+  return json({ ok: true, status: 'completed' })
+}
+
+async function adminReopenProject(env, projectId, adminUser) {
+  const row = await env.DB.prepare(
+    'SELECT id, name, status, creator_user_id FROM projects WHERE id = ?'
+  ).bind(projectId).first()
+  if (!row) throw httpError('项目不存在', 404)
+
+  await env.DB.prepare(
+    'UPDATE projects SET status = ?, completed_at = NULL, lock_user_id = NULL, lock_expires_at = NULL WHERE id = ?'
+  ).bind('open', projectId).run()
+
+  if (row.creator_user_id !== adminUser.uid) {
+    await insertNotification(env, {
+      userId: row.creator_user_id,
+      fromUserId: adminUser.uid,
+      type: 'admin_reopen',
+      title: '管理员已重新开放项目',
+      content: `你的项目《${row.name}》已被管理员重新开放续写。`,
+      projectId
+    })
+  }
+
+  return json({ ok: true, status: 'open' })
+}
+
+async function listNotifications(env, user) {
+  const { results } = await env.DB.prepare(`
+    SELECT
+      n.id,
+      n.type,
+      n.title,
+      n.content,
+      n.project_id,
+      n.created_at,
+      n.read_at,
+      n.from_user_id,
+      fu.username AS from_username
+    FROM notifications n
+    LEFT JOIN users fu ON fu.id = n.from_user_id
+    WHERE n.user_id = ?
+    ORDER BY n.created_at DESC
+    LIMIT 100
+  `).bind(user.uid).all()
+
+  return json({ notifications: results || [] })
+}
+
+async function readNotification(env, notificationId, user) {
+  await env.DB.prepare(
+    'UPDATE notifications SET read_at = ? WHERE id = ? AND user_id = ? AND read_at IS NULL'
+  ).bind(Date.now(), notificationId, user.uid).run()
+
+  return json({ ok: true })
+}
+
 async function generateStarter(env, projectName) {
   const prompt = `请为流浪小说项目《${projectName}》写开头。`
   const txt = await generateText(env, [
@@ -399,6 +592,42 @@ async function requireAuth(request, env) {
   const payload = await verifyToken(env.AUTH_SECRET, token)
   if (!payload || !payload.uid || payload.exp < Date.now()) throw httpError('登录已过期', 401)
   return payload
+}
+
+async function requireAdmin(request, env) {
+  const user = await requireAuth(request, env)
+  const adminName = env.ADMIN_USERNAME || 'Administrator'
+  if (user.username !== adminName) throw httpError('仅管理员可执行此操作', 403)
+  return user
+}
+
+async function ensureMetaTables(env) {
+  await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id INTEGER NOT NULL,
+      from_user_id INTEGER,
+      type TEXT NOT NULL,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      project_id INTEGER,
+      created_at INTEGER NOT NULL,
+      read_at INTEGER,
+      FOREIGN KEY (user_id) REFERENCES users(id),
+      FOREIGN KEY (from_user_id) REFERENCES users(id)
+    )
+  `).run()
+
+  await env.DB.prepare(
+    'CREATE INDEX IF NOT EXISTS idx_notifications_user_created ON notifications(user_id, created_at DESC)'
+  ).run()
+}
+
+async function insertNotification(env, { userId, fromUserId = null, type, title, content, projectId = null }) {
+  await env.DB.prepare(`
+    INSERT INTO notifications (user_id, from_user_id, type, title, content, project_id, created_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).bind(userId, fromUserId, type, title, content, projectId, Date.now()).run()
 }
 
 async function hashPassword(password, salt) {
