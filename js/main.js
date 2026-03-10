@@ -1076,10 +1076,6 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     })
 
-    if (GLOBAL_CONFIG_SITE && GLOBAL_CONFIG_SITE.isHome) {
-      const homeTitle = document.getElementById('site-title')
-      if (homeTitle) homeTitle.remove()
-    }
   }
 
   const unRefreshFn = function () {
