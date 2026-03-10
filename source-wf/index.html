@@ -337,7 +337,7 @@
       p.segments.forEach(s => {
         const item = document.createElement('div');
         item.className = 'seg';
-        item.innerHTML = `<div class="who">${s.username}</div><div>${s.content.replace(/</g, '&lt;')}</div>`;
+        item.innerHTML = `<div class="who">${s.username} · ${fmt(s.created_at)}</div><div>${s.content.replace(/</g, '&lt;')}</div>`;
         seg.appendChild(item);
       });
 
