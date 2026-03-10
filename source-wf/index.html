@@ -36,6 +36,7 @@
     }
     .top a { color: #d1d5db; text-decoration: none; font-size: 14px; }
     .note { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+    .hint { color: #cbd5e1; font-size: 12px; margin-top: 4px; }
 
     .layout { display: grid; grid-template-columns: 320px 1fr; gap: 14px; }
     .panel { background: rgba(17, 24, 39, 0.92); border: 1px solid #374151; border-radius: 14px; padding: 14px; }
@@ -50,6 +51,7 @@
     button { cursor: pointer; background: linear-gradient(90deg, #0ea5e9, #8b5cf6); border: none; }
     button.ghost { background: #1f2937; border: 1px solid #4b5563; }
     button.danger { background: #991b1b; }
+    button:disabled { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.35); }
     .btn-row { display: flex; gap: 8px; }
 
     .project-list { max-height: 520px; overflow: auto; display: grid; gap: 8px; }
@@ -78,7 +80,7 @@
       <div class="title">源--WF</div>
       <a href="/">返回首页</a>
     </div>
-    <div class="note">流浪小说：注册登录后可创建项目，所有访客都可续写。每次续写都记录账号名；同一时间仅一人可写。</div>
+    <div class="note">流浪小说：注册登录后可创建和续写。每次续写都记录账号名；同一时间仅一人可写。</div>
 
     <div id="configWarning" class="panel status err" style="display:none;"></div>
 
@@ -101,6 +103,7 @@
           <input id="projectName" placeholder="项目名，例如：雪夜城邦">
           <textarea id="starterText" placeholder="留空则 AI 生成开头；也可自己写开头"></textarea>
           <button id="createBtn">新建项目</button>
+          <div class="hint">说明：点击“新建项目”后请等待响应，只需按一次。</div>
         </div>
       </section>
 
@@ -118,8 +121,9 @@
             <textarea id="continuation" placeholder="输入你的续写..." disabled></textarea>
             <div class="btn-row" style="margin-top:8px;">
               <button id="lockBtn" class="ghost">申请续写权</button>
-              <button id="appendBtn">提交续写</button>
+              <button id="appendBtn">提交续写+移交续写权</button>
               <button id="completeBtn" class="danger">完成项目</button>
+              <button id="deleteBtn" class="danger">删除项目</button>
             </div>
             <div id="actionMsg" class="status"></div>
           </div>
@@ -157,6 +161,8 @@
       $('starterText').disabled = !loggedIn;
       $('createBtn').disabled = !loggedIn;
       $('lockBtn').disabled = !loggedIn || !state.currentProjectId;
+      $('deleteBtn').disabled = true;
+      $('completeBtn').disabled = true;
       if (!loggedIn) {
         $('continuation').disabled = true;
         $('appendBtn').disabled = true;
@@ -190,6 +196,11 @@
         $('projectTitle').textContent = '请选择一个项目';
         $('projectStatus').textContent = '';
         $('segments').innerHTML = '';
+        $('continuation').disabled = true;
+        $('appendBtn').disabled = true;
+        $('completeBtn').disabled = true;
+        $('lockBtn').disabled = true;
+        $('deleteBtn').disabled = true;
         return;
       }
       $('projectTitle').textContent = p.name;
@@ -207,10 +218,12 @@
       });
 
       const canWrite = p.status !== 'completed' && p.lock_owner_name === state.user;
+      const isCreator = state.user && p.creator_name === state.user;
       $('continuation').disabled = !canWrite;
       $('appendBtn').disabled = !canWrite;
-      $('completeBtn').disabled = !(state.user && p.status !== 'completed' && p.creator_name === state.user);
+      $('completeBtn').disabled = !(isCreator && p.status !== 'completed');
       $('lockBtn').disabled = !state.user || p.status === 'completed';
+      $('deleteBtn').disabled = !isCreator;
     };
 
     const loadProjects = async () => {
@@ -335,9 +348,32 @@
           method: 'POST',
           body: JSON.stringify({ content })
         });
+        stopLockHeartbeat();
         $('continuation').value = '';
         await loadProjectDetail(state.currentProjectId);
-        setActionMsg('续写已提交', 'ok');
+        setActionMsg('续写已提交，并已移交续写权', 'ok');
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    };
+
+    $('deleteBtn').onclick = async () => {
+      try {
+        if (!state.token) throw new Error('请先登录');
+        if (!state.currentProjectId) throw new Error('请先选择项目');
+        if (!state.currentProject || state.currentProject.creator_name !== state.user) {
+          throw new Error('仅项目创建者可删除项目');
+        }
+        if (!confirm('删除后不可恢复，确认删除该项目吗？')) return;
+
+        await api(`/api/projects/${state.currentProjectId}`, { method: 'DELETE' });
+        stopLockHeartbeat();
+        state.currentProjectId = null;
+        state.currentProject = null;
+        $('continuation').value = '';
+        renderProjectDetail();
+        await loadProjects();
+        setActionMsg('项目已删除', 'ok');
       } catch (err) {
         setActionMsg(err.message, 'err');
       }

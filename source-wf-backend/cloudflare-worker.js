@@ -29,6 +29,10 @@ export default {
       if (request.method === 'GET' && projectMatch) {
         return await getProject(env, Number(projectMatch[1]))
       }
+      if (request.method === 'DELETE' && projectMatch) {
+        const user = await requireAuth(request, env)
+        return await deleteProject(env, Number(projectMatch[1]), user)
+      }
 
       const lockMatch = url.pathname.match(/^\/api\/projects\/(\d+)\/(lock|unlock)$/)
       if (request.method === 'POST' && lockMatch) {
@@ -220,10 +224,10 @@ async function appendSegment(request, env, projectId, user) {
   ).bind(projectId, user.uid, content, now).run()
 
   await env.DB.prepare(
-    'UPDATE projects SET lock_expires_at = ? WHERE id = ? AND lock_user_id = ?'
-  ).bind(now + 2 * 60 * 1000, projectId, user.uid).run()
+    'UPDATE projects SET lock_user_id = NULL, lock_expires_at = NULL WHERE id = ? AND lock_user_id = ?'
+  ).bind(projectId, user.uid).run()
 
-  return json({ ok: true })
+  return json({ ok: true, lockReleased: true })
 }
 
 async function completeProject(env, projectId, user) {
@@ -237,6 +241,20 @@ async function completeProject(env, projectId, user) {
   await env.DB.prepare(
     'UPDATE projects SET status = ?, completed_at = ?, lock_user_id = NULL, lock_expires_at = NULL WHERE id = ?'
   ).bind('completed', Date.now(), projectId).run()
+
+  return json({ ok: true })
+}
+
+async function deleteProject(env, projectId, user) {
+  const row = await env.DB.prepare(
+    'SELECT creator_user_id FROM projects WHERE id = ?'
+  ).bind(projectId).first()
+
+  if (!row) throw httpError('项目不存在', 404)
+  if (row.creator_user_id !== user.uid) throw httpError('仅项目创建者可删除项目', 403)
+
+  await env.DB.prepare('DELETE FROM segments WHERE project_id = ?').bind(projectId).run()
+  await env.DB.prepare('DELETE FROM projects WHERE id = ?').bind(projectId).run()
 
   return json({ ok: true })
 }
@@ -395,7 +413,7 @@ function fromBase64url(str) {
 function corsHeaders() {
   return {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,POST,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type,Authorization'
   }
 }
