@@ -35,6 +35,30 @@
       -webkit-background-clip: text; background-clip: text; color: transparent;
     }
     .top a { color: #d1d5db; text-decoration: none; font-size: 14px; }
+    .top-right { display: flex; align-items: center; gap: 10px; }
+    .msg-center-btn {
+      position: relative;
+      width: auto;
+      padding: 8px 14px;
+      background: #111827;
+      border: 1px solid #4b5563;
+      border-radius: 999px;
+      color: #e5e7eb;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .msg-center-btn .dot {
+      display: none;
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 0 2px #0f172a;
+    }
+    .msg-center-btn.has-unread .dot { display: block; }
     .note { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
     .hint { color: #cbd5e1; font-size: 12px; margin-top: 4px; }
 
@@ -43,7 +67,7 @@
     .panel h3 { margin: 0 0 12px; }
 
     .auth-row, .new-row { display: grid; gap: 8px; }
-    input, textarea, button {
+    input, textarea, button, select {
       width: 100%; border-radius: 10px; border: 1px solid #374151; background: #0b1220;
       color: var(--text); padding: 10px;
     }
@@ -68,6 +92,61 @@
     .status { font-size: 13px; margin: 8px 0; color: var(--muted); }
     .status.ok { color: var(--ok); }
     .status.err { color: var(--danger); }
+    .small-title { font-size: 15px; font-weight: 700; margin: 10px 0 8px; }
+    .mini-list { max-height: 220px; overflow: auto; display: grid; gap: 8px; }
+    .mini-item { border: 1px solid #374151; border-radius: 8px; padding: 8px; background: #0b1220; }
+    .mini-meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .admin-box { margin-top: 14px; padding-top: 10px; border-top: 1px dashed #374151; }
+    .unread-dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      margin-right: 6px;
+      background: #f59e0b;
+      vertical-align: middle;
+    }
+    .msg-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9998;
+      background: rgba(2, 6, 23, 0.65);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .msg-modal.open { display: flex; }
+    .msg-card {
+      width: min(760px, 96vw);
+      max-height: 86vh;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid #374151;
+      background: #0b1220;
+      display: flex;
+      flex-direction: column;
+    }
+    .msg-head {
+      padding: 12px 14px;
+      border-bottom: 1px solid #374151;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .msg-body {
+      padding: 12px 14px 14px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+    }
+    .msg-tools {
+      display: flex;
+      gap: 8px;
+      width: auto;
+    }
+    .msg-tools button { width: auto; padding: 8px 10px; }
 
     @media (max-width: 960px) {
       .layout { grid-template-columns: 1fr; }
@@ -78,7 +157,10 @@
   <div class="wrap">
     <div class="top">
       <div class="title">源--WF</div>
-      <a href="/">返回首页</a>
+      <div class="top-right">
+        <button id="msgCenterBtn" class="msg-center-btn" type="button">消息中心<span class="dot"></span></button>
+        <a href="/">返回首页</a>
+      </div>
     </div>
     <div class="note">流浪小说：注册登录后可创建和续写。每次续写都记录账号名；同一时间仅一人可写。</div>
 
@@ -126,9 +208,37 @@
               <button id="deleteBtn" class="danger">删除项目</button>
             </div>
             <div id="actionMsg" class="status"></div>
+
+            <div id="adminPanel" class="admin-box" style="display:none;">
+              <div class="small-title">管理员控制台（Administrator）</div>
+              <div class="status">可查看所有账号及项目，支持强制删除/完成/重新开放，并向指定用户发送提醒。</div>
+              <div class="new-row" style="margin-bottom:10px;">
+                <select id="adminUserSelect"></select>
+                <input id="adminMsgTitle" placeholder="消息标题，例如：请完善剧情逻辑">
+                <textarea id="adminMsgContent" placeholder="输入提醒、建议或警告内容"></textarea>
+                <button id="adminSendBtn">发送管理员消息</button>
+              </div>
+              <div class="small-title">账号列表</div>
+              <div id="adminUsers" class="mini-list"></div>
+              <div class="small-title">项目列表（管理员操作）</div>
+              <div id="adminProjects" class="mini-list"></div>
+            </div>
           </div>
         </div>
       </section>
+    </div>
+  </div>
+
+  <div id="msgModal" class="msg-modal" aria-hidden="true">
+    <div class="msg-card">
+      <div class="msg-head">
+        <strong>消息中心</strong>
+        <div class="msg-tools">
+          <button id="markAllReadBtn" class="ghost" type="button">一键已读</button>
+          <button id="closeMsgModalBtn" class="ghost" type="button">关闭</button>
+        </div>
+      </div>
+      <div id="msgCenterList" class="msg-body"></div>
     </div>
   </div>
 
@@ -143,10 +253,16 @@
       projects: [],
       currentProjectId: null,
       currentProject: null,
-      lockKeepAliveTimer: null
+      lockKeepAliveTimer: null,
+      notifications: [],
+      unreadCount: 0,
+      adminOverview: { users: [], projects: [] },
+      isAdmin: false
     };
 
     const $ = id => document.getElementById(id);
+    const esc = str => String(str || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const fmt = ts => ts ? new Date(ts).toLocaleString('zh-CN') : '-';
 
     const setActionMsg = (msg, cls = '') => {
       const el = $('actionMsg');
@@ -157,15 +273,22 @@
     const setAuthState = () => {
       $('authState').textContent = state.user ? `已登录：${state.user}` : '未登录';
       const loggedIn = !!state.user;
+      state.isAdmin = state.user === 'Administrator';
       $('projectName').disabled = !loggedIn;
       $('starterText').disabled = !loggedIn;
       $('createBtn').disabled = !loggedIn;
       $('lockBtn').disabled = !loggedIn || !state.currentProjectId;
       $('deleteBtn').disabled = true;
       $('completeBtn').disabled = true;
+      $('adminPanel').style.display = state.isAdmin ? 'block' : 'none';
       if (!loggedIn) {
         $('continuation').disabled = true;
         $('appendBtn').disabled = true;
+        state.notifications = [];
+        state.unreadCount = 0;
+        state.adminOverview = { users: [], projects: [] };
+        renderNotifications();
+        renderAdminOverview();
       }
     };
 
@@ -226,6 +349,92 @@
       $('deleteBtn').disabled = !isCreator;
     };
 
+    const renderNotifications = () => {
+      const box = $('msgCenterList');
+      const msgBtn = $('msgCenterBtn');
+      msgBtn.classList.toggle('has-unread', state.unreadCount > 0);
+      box.innerHTML = '';
+      if (!state.user) {
+        box.innerHTML = '<div class="mini-item">登录后可查看管理员消息。</div>';
+        return;
+      }
+      if (!state.notifications.length) {
+        box.innerHTML = '<div class="mini-item">暂无消息。</div>';
+        return;
+      }
+
+      state.notifications.forEach(n => {
+        const row = document.createElement('div');
+        row.className = 'mini-item';
+        const from = n.from_username ? `来自：${esc(n.from_username)}` : '系统通知';
+        const unreadDot = n.read_at ? '' : '<span class="unread-dot"></span>';
+        row.innerHTML = `
+          <div>${unreadDot}<strong>${esc(n.title)}</strong></div>
+          <div style="margin-top:4px;">${esc(n.content)}</div>
+          <div class="mini-meta">${from} · ${fmt(n.created_at)}</div>
+        `;
+        row.onclick = async () => {
+          if (n.read_at) return;
+          try {
+            await api(`/api/notifications/${n.id}/read`, { method: 'POST', body: '{}' });
+            n.read_at = Date.now();
+            state.unreadCount = state.notifications.reduce((acc, item) => acc + (item.read_at ? 0 : 1), 0);
+            renderNotifications();
+          } catch (_) {}
+        };
+        box.appendChild(row);
+      });
+    };
+
+    const renderAdminOverview = () => {
+      if (!state.isAdmin) return;
+
+      const users = state.adminOverview.users || [];
+      const projects = state.adminOverview.projects || [];
+
+      const select = $('adminUserSelect');
+      select.innerHTML = '';
+      if (!users.length) {
+        const opt = document.createElement('option');
+        opt.value = '';
+        opt.textContent = '暂无其他账号';
+        select.appendChild(opt);
+      } else {
+        users.forEach(u => {
+          const opt = document.createElement('option');
+          opt.value = String(u.id);
+          opt.textContent = `${u.username}（项目 ${u.project_count || 0}）`;
+          select.appendChild(opt);
+        });
+      }
+
+      const usersBox = $('adminUsers');
+      usersBox.innerHTML = users.length
+        ? users.map(u => `<div class="mini-item"><div><strong>${esc(u.username)}</strong></div><div class="mini-meta">创建项目数：${u.project_count || 0} · 注册：${fmt(u.created_at)}</div></div>`).join('')
+        : '<div class="mini-item">暂无其他用户。</div>';
+
+      const pBox = $('adminProjects');
+      pBox.innerHTML = '';
+      if (!projects.length) {
+        pBox.innerHTML = '<div class="mini-item">暂无项目。</div>';
+        return;
+      }
+      projects.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'mini-item';
+        row.innerHTML = `
+          <div><strong>${esc(p.name)}</strong></div>
+          <div class="mini-meta">创建者：${esc(p.creator_name)} · 状态：${p.status === 'completed' ? '已完成' : '进行中'}</div>
+          <div class="btn-row" style="margin-top:6px;">
+            <button class="danger" data-admin-action="force-delete" data-project-id="${p.id}">强制删除</button>
+            <button data-admin-action="force-complete" data-project-id="${p.id}" ${p.status === 'completed' ? 'disabled' : ''}>强制完成</button>
+            <button class="ghost" data-admin-action="reopen" data-project-id="${p.id}" ${p.status !== 'completed' ? 'disabled' : ''}>重新开放</button>
+          </div>
+        `;
+        pBox.appendChild(row);
+      });
+    };
+
     const loadProjects = async () => {
       const data = await api('/api/projects', { method: 'GET' });
       state.projects = data.projects || [];
@@ -233,6 +442,33 @@
       if (state.currentProjectId) {
         await loadProjectDetail(state.currentProjectId);
       }
+    };
+
+    const loadNotifications = async () => {
+      if (!state.token) {
+        state.notifications = [];
+        state.unreadCount = 0;
+        renderNotifications();
+        return;
+      }
+      const data = await api('/api/notifications', { method: 'GET' });
+      state.notifications = data.notifications || [];
+      state.unreadCount = Number(data.unreadCount || 0);
+      renderNotifications();
+    };
+
+    const loadAdminOverview = async () => {
+      if (!state.isAdmin || !state.token) {
+        state.adminOverview = { users: [], projects: [] };
+        renderAdminOverview();
+        return;
+      }
+      const data = await api('/api/admin/overview', { method: 'GET' });
+      state.adminOverview = {
+        users: data.users || [],
+        projects: data.projects || []
+      };
+      renderAdminOverview();
     };
 
     const loadProjectDetail = async (id) => {
@@ -266,6 +502,16 @@
       state.lockKeepAliveTimer = null;
     };
 
+    const openMsgCenter = () => {
+      $('msgModal').classList.add('open');
+      $('msgModal').setAttribute('aria-hidden', 'false');
+    };
+
+    const closeMsgCenter = () => {
+      $('msgModal').classList.remove('open');
+      $('msgModal').setAttribute('aria-hidden', 'true');
+    };
+
     $('registerBtn').onclick = async () => {
       try {
         await api('/api/register', {
@@ -291,6 +537,8 @@
         setAuthState();
         setActionMsg('登录成功', 'ok');
         await loadProjects();
+        await loadNotifications();
+        await loadAdminOverview();
       } catch (err) {
         setActionMsg(err.message, 'err');
       }
@@ -302,9 +550,37 @@
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
       stopLockHeartbeat();
+      closeMsgCenter();
       setAuthState();
       setActionMsg('已退出登录', 'ok');
       renderProjectDetail();
+      renderNotifications();
+      renderAdminOverview();
+    };
+
+    $('msgCenterBtn').onclick = async () => {
+      openMsgCenter();
+      try {
+        await loadNotifications();
+      } catch (_) {}
+    };
+
+    $('closeMsgModalBtn').onclick = () => closeMsgCenter();
+    $('msgModal').addEventListener('click', e => {
+      if (e.target.id === 'msgModal') closeMsgCenter();
+    });
+
+    $('markAllReadBtn').onclick = async () => {
+      try {
+        if (!state.token) throw new Error('请先登录');
+        await api('/api/notifications/read-all', { method: 'POST', body: '{}' });
+        state.notifications = state.notifications.map(n => ({ ...n, read_at: n.read_at || Date.now() }));
+        state.unreadCount = 0;
+        renderNotifications();
+        setActionMsg('消息已全部标记为已读', 'ok');
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
     };
 
     $('createBtn').onclick = async () => {
@@ -379,6 +655,66 @@
       }
     };
 
+    $('adminSendBtn').onclick = async () => {
+      try {
+        if (!state.isAdmin) throw new Error('仅管理员可执行此操作');
+        const toUserId = Number($('adminUserSelect').value || 0);
+        const title = $('adminMsgTitle').value.trim();
+        const content = $('adminMsgContent').value.trim();
+        if (!toUserId) throw new Error('请选择接收账号');
+        if (!title) throw new Error('请输入消息标题');
+        if (!content) throw new Error('请输入消息内容');
+
+        await api('/api/admin/message', {
+          method: 'POST',
+          body: JSON.stringify({ toUserId, title, content })
+        });
+        $('adminMsgTitle').value = '';
+        $('adminMsgContent').value = '';
+        setActionMsg('管理员消息已发送', 'ok');
+        await loadAdminOverview();
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    };
+
+    $('adminProjects').addEventListener('click', async (e) => {
+      const target = e.target.closest('button[data-admin-action]');
+      if (!target) return;
+
+      try {
+        if (!state.isAdmin) throw new Error('仅管理员可执行此操作');
+        const action = target.dataset.adminAction;
+        const projectId = Number(target.dataset.projectId || 0);
+        if (!projectId || !action) return;
+
+        const actionTextMap = {
+          'force-delete': '强制删除',
+          'force-complete': '强制完成',
+          reopen: '重新开放'
+        };
+        const ok = confirm(`确认执行“${actionTextMap[action] || action}”？`);
+        if (!ok) return;
+
+        await api(`/api/admin/projects/${projectId}/${action}`, {
+          method: 'POST',
+          body: '{}'
+        });
+
+        if (state.currentProjectId === projectId) {
+          state.currentProjectId = null;
+          state.currentProject = null;
+          renderProjectDetail();
+        }
+        await loadProjects();
+        await loadAdminOverview();
+        await loadNotifications();
+        setActionMsg(`管理员操作已执行：${actionTextMap[action] || action}`, 'ok');
+      } catch (err) {
+        setActionMsg(err.message, 'err');
+      }
+    });
+
     $('completeBtn').onclick = async () => {
       try {
         if (!state.token) throw new Error('请先登录');
@@ -406,10 +742,14 @@
       setAuthState();
       try {
         await loadProjects();
+        await loadNotifications();
+        await loadAdminOverview();
       } catch (_) {}
       setInterval(() => {
         if (state.currentProjectId) loadProjectDetail(state.currentProjectId).catch(() => {});
         loadProjects().catch(() => {});
+        loadNotifications().catch(() => {});
+        if (state.isAdmin) loadAdminOverview().catch(() => {});
       }, 8000);
     };
 
