@@ -10,6 +10,19 @@
 
 将 `schema.sql` 执行到 D1 数据库。
 
+> 如果是老库升级，请补充执行：
+>
+> ```sql
+> CREATE TABLE IF NOT EXISTS messages (
+>   id INTEGER PRIMARY KEY AUTOINCREMENT,
+>   user_id INTEGER NOT NULL,
+>   content TEXT NOT NULL,
+>   created_at INTEGER NOT NULL,
+>   FOREIGN KEY (user_id) REFERENCES users(id)
+> );
+> CREATE INDEX IF NOT EXISTS idx_messages_created ON messages(created_at DESC);
+> ```
+
 ## 3. 配置环境变量/密钥
 
 - 必需：`AUTH_SECRET`（强随机字符串）
@@ -18,7 +31,7 @@
 
 ## 4. 修改前端 API 地址
 
-编辑 `/source-wf/index.html`：
+编辑 `/source-wf/index.html` 和 `/letter/index.html`：
 
 ```js
 const API_BASE = 'https://your-source-wf-worker.example.com';
@@ -33,3 +46,4 @@ const API_BASE = 'https://your-source-wf-worker.example.com';
 - 协作续写：所有访客可见同一项目并续写
 - 锁机制：同一时间仅一人持有续写权（默认 2 分钟，前端每 20 秒续期）
 - 完成项目：仅创建者可点击“完成”
+- 留言板：登录后可发布留言，仅作者本人可删除

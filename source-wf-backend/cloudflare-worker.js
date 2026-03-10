@@ -24,6 +24,13 @@ export default {
         const user = await requireAuth(request, env)
         return await createProject(request, env, user)
       }
+      if (request.method === 'GET' && url.pathname === '/api/messages') {
+        return await listMessages(env)
+      }
+      if (request.method === 'POST' && url.pathname === '/api/messages') {
+        const user = await requireAuth(request, env)
+        return await createMessage(request, env, user)
+      }
 
       const projectMatch = url.pathname.match(/^\/api\/projects\/(\d+)$/)
       if (request.method === 'GET' && projectMatch) {
@@ -54,6 +61,12 @@ export default {
       if (request.method === 'POST' && completeMatch) {
         const user = await requireAuth(request, env)
         return await completeProject(env, Number(completeMatch[1]), user)
+      }
+
+      const messageMatch = url.pathname.match(/^\/api\/messages\/(\d+)$/)
+      if (request.method === 'DELETE' && messageMatch) {
+        const user = await requireAuth(request, env)
+        return await deleteMessage(env, Number(messageMatch[1]), user)
       }
 
       return json({ error: 'Not found' }, 404)
@@ -242,6 +255,41 @@ async function completeProject(env, projectId, user) {
     'UPDATE projects SET status = ?, completed_at = ?, lock_user_id = NULL, lock_expires_at = NULL WHERE id = ?'
   ).bind('completed', Date.now(), projectId).run()
 
+  return json({ ok: true })
+}
+
+async function listMessages(env) {
+  const { results } = await env.DB.prepare(`
+    SELECT m.id, m.content, m.created_at, u.username
+    FROM messages m
+    JOIN users u ON u.id = m.user_id
+    ORDER BY m.created_at DESC
+    LIMIT 200
+  `).all()
+
+  return json({ messages: results || [] })
+}
+
+async function createMessage(request, env, user) {
+  const body = await request.json()
+  const content = String(body.content || '').trim()
+  if (!content) throw httpError('留言内容不能为空', 400)
+  if (content.length > 500) throw httpError('留言最多 500 字', 400)
+
+  const now = Date.now()
+  const created = await env.DB.prepare(
+    'INSERT INTO messages (user_id, content, created_at) VALUES (?, ?, ?) RETURNING id'
+  ).bind(user.uid, content, now).first()
+
+  return json({ ok: true, message: { id: created.id, username: user.username, content, created_at: now } })
+}
+
+async function deleteMessage(env, messageId, user) {
+  const row = await env.DB.prepare('SELECT user_id FROM messages WHERE id = ?').bind(messageId).first()
+  if (!row) throw httpError('留言不存在', 404)
+  if (row.user_id !== user.uid) throw httpError('仅留言作者可删除', 403)
+
+  await env.DB.prepare('DELETE FROM messages WHERE id = ?').bind(messageId).run()
   return json({ ok: true })
 }
 
