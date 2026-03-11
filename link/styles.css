@@ -1,16 +1,165 @@
-body {  
-    font-family: Arial, sans-serif;  
-    text-align: center;  
-    margin: 20px;  
-}  
-  
-button {  
-    padding: 10px 20px;  
-    margin: 10px;  
-    font-size: 16px;  
-    cursor: pointer;  
-}  
-  
-#feedback {  
-    margin-top: 20px;  
+:root {
+  --bg-image: url('/img/%E5%9B%BE%E7%89%874.jpg');
+  --text-main: #ecf3ff;
+  --text-soft: #c3d2ea;
+  --accent: #7ea9ff;
+  --accent-strong: #5f8eff;
+  --ok: #97f3c5;
+  --error: #ffb2bf;
+  --glass-bg: rgba(10, 18, 34, 0.58);
+  --glass-border: rgba(198, 221, 255, 0.24);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: "Noto Sans SC", "Segoe UI", sans-serif;
+  color: var(--text-main);
+  background-color: #0c1322;
+  background-image: linear-gradient(180deg, rgba(10, 14, 28, .68), rgba(7, 10, 20, .9)), var(--bg-image);
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+#particle-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle at 20% 5%, rgba(104, 143, 255, .26), transparent 44%),
+              radial-gradient(circle at 80% 90%, rgba(113, 88, 213, .22), transparent 42%);
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  width: min(1000px, 92vw);
+  margin: 0 auto;
+  padding: 2.2rem 0 2.8rem;
+}
+
+.glass {
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .32);
+}
+
+.hero {
+  border-radius: 16px;
+  padding: 1rem 1.2rem;
+  text-align: center;
+}
+
+.eyebrow { margin: 0; color: var(--text-soft); letter-spacing: .08em; }
+h1 { margin: .35rem 0 .5rem; font-size: clamp(1.8rem, 4vw, 2.65rem); }
+.subtitle { margin: 0; color: var(--text-soft); }
+
+.card {
+  margin-top: 1rem;
+  border-radius: 16px;
+  padding: 1.1rem 1.25rem;
+}
+
+h2 { margin-top: .2rem; }
+.question, .story { color: var(--text-soft); }
+
+.options { display: grid; gap: .55rem; }
+label {
+  display: flex;
+  gap: .55rem;
+  padding: .52rem .6rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.02);
+}
+label:hover { background: rgba(255,255,255,.08); }
+
+.hud {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .7rem;
+  margin-bottom: .9rem;
+}
+.stat {
+  border: 1px solid rgba(180, 203, 255, .2);
+  border-radius: 12px;
+  padding: .45rem .6rem;
+  background: rgba(255,255,255,.04);
+  display: flex;
+  justify-content: space-between;
+}
+.stat span { color: var(--text-soft); font-size: .9rem; }
+
+.dialogue-box {
+  margin: 0;
+  border: 1px solid rgba(180, 208, 255, .22);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
+  padding: .8rem .9rem;
+}
+.speaker {
+  margin: 0 0 .35rem;
+  color: #a8c5ff;
+  font-weight: 700;
+}
+.story { margin: 0; line-height: 1.7; min-height: 2.9em; }
+
+.actions {
+  margin-top: .9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: .55rem .95rem;
+  background: linear-gradient(125deg, var(--accent), var(--accent-strong));
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .12s ease, filter .2s ease;
+}
+button:hover { transform: translateY(-1px); filter: brightness(1.08); }
+button:active { transform: translateY(0); }
+
+.feedback {
+  min-height: 1.3em;
+  margin-top: .7rem;
+}
+.feedback.ok { color: var(--ok); }
+.feedback.error { color: var(--error); }
+
+.click-burst {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  background: radial-gradient(circle, rgba(170,204,255,.95), rgba(123,94,255,.15));
+  animation: burst .65s ease-out forwards;
+}
+@keyframes burst {
+  from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  to { transform: translate(-50%, -50%) scale(8); opacity: 0; }
+}
+
+@media (max-width: 700px) {
+  .hud { grid-template-columns: 1fr; }
 }
