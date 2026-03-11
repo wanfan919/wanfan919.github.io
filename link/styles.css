@@ -1,5 +1,5 @@
 :root {
-  --bg-image: url('/img/图片4.jpg');
+  --bg-image: url('/img/%E5%9B%BE%E7%89%874.jpg');
   --card-bg: rgba(11, 20, 34, 0.62);
   --card-border: rgba(190, 213, 255, 0.24);
   --text-main: #e9f1ff;
@@ -17,7 +17,12 @@ body {
   min-height: 100vh;
   font-family: "Noto Sans SC", "Segoe UI", sans-serif;
   color: var(--text-main);
-  background: var(--bg-image) center/cover fixed no-repeat;
+  background-color: #0c1322;
+  background-image: linear-gradient(180deg, rgba(12, 19, 34, 0.65), rgba(7, 11, 20, 0.88)), var(--bg-image);
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 .page-overlay {
