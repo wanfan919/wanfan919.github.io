@@ -1,54 +1,71 @@
-let currentScene = 0;  
-  
-const scenes = [  
-    {  
-        text: "你决定继续前行，穿过密林。突然，你听到远处传来奇怪的声音。",  
-        choices: ['goForward', 'searchSounds']  
-    },  
-    {  
-        text: "你决定返回原路，但发现来时的路已经消失在茂密的树木中。你感到有些不安。",  
-        choices: ['stayCalm', 'panic']  
-    },  
-    // 可以继续添加更多的场景  
-];  
-  
-let choicesMap = {  
-    'goForward': 1, // 跳转到场景1  
-    'turnBack': 1, // 假设返回也进入场景1，但逻辑上可能需要调整  
-    'searchSounds': 2, // 假设存在场景2  
-    // 其他选择对应的场景编号  
-};  
-  
-function chooseAction(action) {  
-    const nextSceneIndex = choicesMap[action];  
-    if (nextSceneIndex !== undefined && nextSceneIndex < scenes.length) {  
-        currentScene = nextSceneIndex;  
-        updateStory();  
-    } else {  
-        document.getElementById('feedback').textContent = '无效的选择，请重试。';  
-    }  
-}  
-  
-function updateStory() {  
-    const storyElement = document.getElementById('story');  
-    const feedbackElement = document.getElementById('feedback');  
-    storyElement.textContent = scenes[currentScene].text;  
-    feedbackElement.textContent = ''; // 清空反馈  
-  
-    // 假设每个场景都有两个选择按钮  
-    const buttons = document.getElementsByTagName('button');  
-    for (let i = 0; i < buttons.length; i++) {  
-        buttons[i].remove(); // 移除所有现有按钮  
-    }  
-  
-    // 添加新场景的按钮  
-    for (let choice of scenes[currentScene].choices) {  
-        const button = document.createElement('button');  
-        button.textContent = choice.charAt(0).toUpperCase() + choice.slice(1); // 首字母大写  
-        button.onclick = () => chooseAction(choice);  
-        document.body.appendChild(button);  
-    }  
-}  
-  
-// 初始化游戏  
-updateStory();
+const quizSubmit = document.getElementById('quiz-submit');
+const quizFeedback = document.getElementById('quiz-feedback');
+
+quizSubmit.addEventListener('click', () => {
+  const selected = document.querySelector('input[name="answer"]:checked');
+  if (!selected) {
+    quizFeedback.textContent = '请先选择一个答案。';
+    quizFeedback.className = 'feedback error';
+    return;
+  }
+
+  const correct = selected.value === 'elephant' || selected.value === 'zebra';
+  quizFeedback.textContent = correct ? '回答正确！大象和斑马都属于草食性动物。' : '回答错误，再试试看。';
+  quizFeedback.className = `feedback ${correct ? 'ok' : 'error'}`;
+});
+
+const scenes = {
+  start: {
+    text: '你醒来后发现自己身处雾气弥漫的森林，远处有微弱光点闪烁。你决定：',
+    choices: [
+      { label: '朝光点前进', next: 'light' },
+      { label: '沿溪流寻找出口', next: 'river' }
+    ]
+  },
+  light: {
+    text: '你靠近光点，发现是一盏悬浮的灯笼。它照亮了一条石路。',
+    choices: [
+      { label: '沿石路继续走', next: 'safe' },
+      { label: '回到原地', next: 'start' }
+    ]
+  },
+  river: {
+    text: '你沿着溪流前进，听到水声愈发湍急，前方像是瀑布边缘。',
+    choices: [
+      { label: '停下观察地形', next: 'safe' },
+      { label: '冒险跳下去', next: 'fail' }
+    ]
+  },
+  safe: {
+    text: '你找到一条安全小径并成功走出森林。',
+    choices: [{ label: '重新开始', next: 'start' }],
+    feedback: '结局：你顺利脱困。'
+  },
+  fail: {
+    text: '你踩空跌入深坑，幸好被藤蔓拦住，但暂时无法离开。',
+    choices: [{ label: '重新开始', next: 'start' }],
+    feedback: '结局：这次冒险失败了。'
+  }
+};
+
+const story = document.getElementById('story');
+const adventureActions = document.getElementById('adventure-actions');
+const adventureFeedback = document.getElementById('adventure-feedback');
+
+function renderScene(sceneKey) {
+  const scene = scenes[sceneKey];
+  story.textContent = scene.text;
+  adventureFeedback.textContent = scene.feedback || '';
+  adventureFeedback.className = `feedback ${sceneKey === 'safe' ? 'ok' : sceneKey === 'fail' ? 'error' : ''}`.trim();
+
+  adventureActions.innerHTML = '';
+  scene.choices.forEach((choice) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = choice.label;
+    button.addEventListener('click', () => renderScene(choice.next));
+    adventureActions.appendChild(button);
+  });
+}
+
+renderScene('start');
