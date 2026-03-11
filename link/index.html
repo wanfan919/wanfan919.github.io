@@ -28,6 +28,24 @@
       </form>
       <div class="actions">
         <button id="quiz-submit" type="button">校验认知</button>
+  <div class="page-overlay"></div>
+  <main class="container">
+    <header class="hero">
+      <p class="eyebrow">The Wandering Fiction</p>
+      <h1>测试区域</h1>
+      <p class="subtitle">背景与主页统一，并修复小游戏交互，让整体 UI 更柔和、统一。</p>
+    </header>
+
+    <section class="card" aria-labelledby="quiz-title">
+      <h2 id="quiz-title">简单问答游戏</h2>
+      <p class="question">问题：哪种动物是草食性的？</p>
+      <form id="quiz-form" class="options">
+        <label><input type="radio" name="answer" value="lion" /> 狮子</label>
+        <label><input type="radio" name="answer" value="elephant" /> 大象</label>
+        <label><input type="radio" name="answer" value="zebra" /> 斑马</label>
+      </form>
+      <div class="actions">
+        <button id="quiz-submit" type="button">提交答案</button>
       </div>
       <p id="quiz-feedback" class="feedback" aria-live="polite"></p>
     </section>
@@ -46,6 +64,9 @@
         <p id="story" class="story"></p>
       </article>
 
+    <section class="card" aria-labelledby="adventure-title">
+      <h2 id="adventure-title">文字冒险：迷失森林</h2>
+      <p id="story" class="story"></p>
       <div id="adventure-actions" class="actions"></div>
       <p id="adventure-feedback" class="feedback" aria-live="polite"></p>
     </section>
